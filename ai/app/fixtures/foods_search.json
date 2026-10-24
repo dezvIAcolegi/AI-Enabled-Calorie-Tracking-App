@@ -1,8 +1,0 @@
-[
-  { "food_id": "fdc:173424", "name": "Egg, whole, cooked, scrambled",
-    "per_100g": { "kcal": 148, "protein": 10.0, "carbs": 1.6, "fat": 11.0 } },
-  { "food_id": "fdc:171287", "name": "Egg, whole, raw, fresh",
-    "per_100g": { "kcal": 143, "protein": 12.6, "carbs": 0.7, "fat": 9.5 } },
-  { "food_id": "fdc:173423", "name": "Egg, whole, cooked, hard-boiled",
-    "per_100g": { "kcal": 155, "protein": 12.6, "carbs": 1.1, "fat": 10.6 } }
-]

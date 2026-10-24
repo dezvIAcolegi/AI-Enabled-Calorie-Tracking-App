@@ -1,4 +1,4 @@
-// Same cases as ai/tests/test_macros.py. Keep them in sync.
+// Same cases as ai/tests/nutrition/test_macros.py. Keep them in sync.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { macrosFor, sumMacros, type Nutrients } from "./macros.ts";
