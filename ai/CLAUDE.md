@@ -36,4 +36,13 @@ FoodData Central search and lookup, used by `meal/` and exposed as `GET /foods/s
 
 ## Commands
 
-Add run, test and lint commands here once the FastAPI service is scaffolded.
+Run from `ai/` with Python 3.11:
+
+```sh
+python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+cp .env.example .env                           # fill in keys; stubs run without them
+uvicorn app.main:app --reload                  # http://127.0.0.1:8000/docs
+python -m pytest
+ruff check .
+```
