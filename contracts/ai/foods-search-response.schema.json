@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "foods-search-response.schema.json",
+  "title": "FoodsSearchResponse",
+  "description": "Response body of GET /foods/search?q=. Food entries matching the query, best first; empty when nothing matches.",
+  "type": "array",
+  "items": { "$ref": "ingredient-item.schema.json#/$defs/candidate" }
+}

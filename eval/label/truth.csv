@@ -1,0 +1,4 @@
+photo,condition,language,kcal,protein,carbs,fat,serving_grams
+example_clear_en.jpg,clear,en,250,10,30,10,40
+example_blurry_en.jpg,blurry,en,372,13.5,58.7,7,40
+example_romanian.jpg,romanian,ro,535,7.6,51,33,

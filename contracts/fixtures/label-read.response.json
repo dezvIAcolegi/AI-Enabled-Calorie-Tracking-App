@@ -1,0 +1,6 @@
+{
+  "per_100g": { "kcal": 389, "protein": 13.0, "carbs": 66.0, "fat": 7.0 },
+  "per_serving": { "kcal": 156, "protein": 5.2, "carbs": 26.4, "fat": 2.8 },
+  "serving_grams": 40,
+  "flagged": []
+}
