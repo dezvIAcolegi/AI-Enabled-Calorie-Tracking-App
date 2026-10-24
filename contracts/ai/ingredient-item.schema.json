@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ingredient-item.schema.json",
+  "title": "IngredientItem",
+  "description": "One food in a meal, as returned by POST /meal/photo and POST /meal/text. Macros for the item are computed with contracts/ts/macros.ts: per_100g × grams / 100.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "food_id", "grams", "confidence", "per_100g", "candidates"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Food name as detected by the model, e.g. \"scrambled eggs\". Shown to the user."
+    },
+    "food_id": {
+      "$ref": "#/$defs/foodId",
+      "description": "The matched food entry. Always the same as candidates[0].food_id."
+    },
+    "grams": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Estimated portion in grams. The user can edit it."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "How sure the AI is about this item (detection and portion), 0 to 1."
+    },
+    "per_100g": {
+      "$ref": "#/$defs/macros",
+      "description": "Macros of the matched food per 100 g. Always the same as candidates[0].per_100g."
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "description": "Up to 3 food entries that match the name, best first. candidates[0] is the one used above; the user can switch to another, which replaces food_id and per_100g.",
+      "items": { "$ref": "#/$defs/candidate" }
+    }
+  },
+  "$defs": {
+    "foodId": {
+      "type": "string",
+      "pattern": "^(fdc|off|label|manual):.+$",
+      "description": "Food entry id, prefixed by source: fdc (FoodData Central), off (Open Food Facts), label (read from a nutrition label), manual (entered by the user)."
+    },
+    "macros": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kcal", "protein", "carbs", "fat"],
+      "properties": {
+        "kcal": { "type": "number", "minimum": 0 },
+        "protein": { "type": "number", "minimum": 0, "description": "grams" },
+        "carbs": { "type": "number", "minimum": 0, "description": "grams" },
+        "fat": { "type": "number", "minimum": 0, "description": "grams" }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["food_id", "name", "per_100g"],
+      "properties": {
+        "food_id": { "$ref": "#/$defs/foodId" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the food entry in its source database, e.g. \"Egg, whole, cooked, scrambled\"."
+        },
+        "per_100g": { "$ref": "#/$defs/macros" }
+      }
+    }
+  }
+}

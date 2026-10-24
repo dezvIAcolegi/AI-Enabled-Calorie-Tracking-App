@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "meal-response.schema.json",
+  "title": "MealResponse",
+  "description": "Response body of POST /meal/photo and POST /meal/text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["items", "warnings"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "Detected foods. Empty when no food was found (see warnings).",
+      "items": { "$ref": "ingredient-item.schema.json" }
+    },
+    "warnings": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Problems the app should tell the user about. Empty when there are none.",
+      "items": {
+        "type": "string",
+        "enum": ["no_food_detected", "image_unclear", "mixed_dish", "text_unclear"],
+        "description": "no_food_detected: nothing edible found. image_unclear: photo too blurry or dark to be sure. mixed_dish: a stew, soup or similar where ingredients and grams are rough guesses. text_unclear: part of the sentence could not be turned into foods."
+      }
+    }
+  }
+}

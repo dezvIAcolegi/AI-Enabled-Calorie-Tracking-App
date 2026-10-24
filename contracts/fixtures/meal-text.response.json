@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "name": "eggs",
+      "food_id": "fdc:173424",
+      "grams": 100,
+      "confidence": 0.9,
+      "per_100g": { "kcal": 148, "protein": 10.0, "carbs": 1.6, "fat": 11.0 },
+      "candidates": [
+        {
+          "food_id": "fdc:173424",
+          "name": "Egg, whole, cooked, scrambled",
+          "per_100g": { "kcal": 148, "protein": 10.0, "carbs": 1.6, "fat": 11.0 }
+        },
+        {
+          "food_id": "fdc:173425",
+          "name": "Egg, whole, cooked, hard-boiled",
+          "per_100g": { "kcal": 155, "protein": 12.6, "carbs": 1.1, "fat": 10.6 }
+        },
+        {
+          "food_id": "fdc:173423",
+          "name": "Egg, whole, cooked, fried",
+          "per_100g": { "kcal": 196, "protein": 13.6, "carbs": 0.8, "fat": 14.8 }
+        }
+      ]
+    },
+    {
+      "name": "toast",
+      "food_id": "fdc:174928",
+      "grams": 30,
+      "confidence": 0.88,
+      "per_100g": { "kcal": 293, "protein": 9.0, "carbs": 54.4, "fat": 4.0 },
+      "candidates": [
+        {
+          "food_id": "fdc:174928",
+          "name": "Bread, white, commercially prepared, toasted",
+          "per_100g": { "kcal": 293, "protein": 9.0, "carbs": 54.4, "fat": 4.0 }
+        },
+        {
+          "food_id": "fdc:172688",
+          "name": "Bread, whole-wheat, commercially prepared, toasted",
+          "per_100g": { "kcal": 306, "protein": 16.3, "carbs": 51.2, "fat": 4.3 }
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

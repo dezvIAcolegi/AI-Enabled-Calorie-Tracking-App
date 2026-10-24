@@ -6,6 +6,7 @@ The shared source of truth for all four roles. **Read-only for every Claude sess
 |---|---|---|
 | `db/` | SQL migrations for every table | Kevin |
 | `ai/` | JSON schemas: ingredient item, label result | Sebi & Lucas |
+| `fixtures/` | Sample responses that validate against `ai/`; the AI stubs return them and the app builds against them. Food ids and macros are illustrative, not checked against FDC | Sebi & Lucas |
 | `openapi.yaml` | AI service spec: `POST /meal/photo`, `POST /meal/text`, `POST /label/read`, `GET /foods/search` | All |
 | `ts/api.ts` | **Generated** from `openapi.yaml`; never edit by hand | All |
 | `ts/macros.ts` | The single macro function (`per_100g × grams / 100`) | Lucas |
