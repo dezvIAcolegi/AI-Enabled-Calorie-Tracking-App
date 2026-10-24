@@ -1,0 +1,351 @@
+{
+  "bacon.png": {
+    "gemini-3.5-flash": {
+      "seconds": 2.2,
+      "items": [
+        {
+          "name": "cooked bacon",
+          "grams": 12.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 3.5,
+      "items": [
+        {
+          "name": "cooked bacon",
+          "grams": 8.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "cascaval.png": {
+    "gemini-3.5-flash": {
+      "seconds": 2.1,
+      "items": [
+        {
+          "name": "cheddar cheese",
+          "grams": 250.0,
+          "confidence": 0.9
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 3.5,
+      "items": [
+        {
+          "name": "cheddar cheese",
+          "grams": 250.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "emmentaler.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.9,
+      "items": [
+        {
+          "name": "swiss cheese",
+          "grams": 450.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 3.1,
+      "items": [
+        {
+          "name": "swiss cheese",
+          "grams": 250.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "oua ochi.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.8,
+      "items": [
+        {
+          "name": "fried egg",
+          "grams": 110.0,
+          "confidence": 0.95
+        },
+        {
+          "name": "fried bacon",
+          "grams": 25.0,
+          "confidence": 0.85
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 1.4,
+      "items": [
+        {
+          "name": "fried egg",
+          "grams": 50.0,
+          "confidence": 0.95
+        },
+        {
+          "name": "fried egg",
+          "grams": 50.0,
+          "confidence": 0.95
+        },
+        {
+          "name": "bacon",
+          "grams": 30.0,
+          "confidence": 0.85
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "paine.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.9,
+      "items": [
+        {
+          "name": "crusty bread loaf",
+          "grams": 400.0,
+          "confidence": 0.9
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 1.1,
+      "items": [
+        {
+          "name": "bread",
+          "grams": 150.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "pizza.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 2.2,
+      "items": [
+        {
+          "name": "cheese pizza",
+          "grams": 450.0,
+          "confidence": 0.9
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 2.5,
+      "items": [
+        {
+          "name": "pizza",
+          "grams": 600.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    }
+  },
+  "Ramen.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 2.5,
+      "items": [
+        {
+          "name": "ramen noodles",
+          "grams": 180.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "ramen broth",
+          "grams": 350.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "chashu pork",
+          "grams": 60.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "narutomaki",
+          "grams": 10.0,
+          "confidence": 0.95
+        },
+        {
+          "name": "wakame seaweed",
+          "grams": 15.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "nori seaweed",
+          "grams": 3.0,
+          "confidence": 0.95
+        },
+        {
+          "name": "scallion",
+          "grams": 5.0,
+          "confidence": 0.8
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 1.6,
+      "items": [
+        {
+          "name": "ramen noodle soup",
+          "grams": 600.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    }
+  },
+  "Rosii.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.5,
+      "items": [
+        {
+          "name": "roma tomato",
+          "grams": 180.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 1.8,
+      "items": [
+        {
+          "name": "plum tomato",
+          "grams": 120.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "sandvis.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.6,
+      "items": [
+        {
+          "name": "white bread",
+          "grams": 70.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "ham",
+          "grams": 35.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "cheese",
+          "grams": 20.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "cucumber",
+          "grams": 15.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "cream cheese",
+          "grams": 10.0,
+          "confidence": 0.75
+        }
+      ],
+      "warnings": []
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 1.8,
+      "items": [
+        {
+          "name": "white bread",
+          "grams": 60.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "ham",
+          "grams": 25.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "swiss cheese",
+          "grams": 20.0,
+          "confidence": 0.8
+        },
+        {
+          "name": "cucumber",
+          "grams": 10.0,
+          "confidence": 0.75
+        },
+        {
+          "name": "mayonnaise",
+          "grams": 10.0,
+          "confidence": 0.7
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    }
+  },
+  "spaghete.jpg": {
+    "gemini-3.5-flash": {
+      "seconds": 1.4,
+      "items": [
+        {
+          "name": "cooked spaghetti",
+          "grams": 200.0,
+          "confidence": 0.9
+        },
+        {
+          "name": "bolognese sauce",
+          "grams": 120.0,
+          "confidence": 0.85
+        },
+        {
+          "name": "fresh basil",
+          "grams": 2.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    },
+    "gemini-3.5-flash-lite": {
+      "seconds": 2.5,
+      "items": [
+        {
+          "name": "spaghetti with meat sauce",
+          "grams": 280.0,
+          "confidence": 0.95
+        }
+      ],
+      "warnings": [
+        "mixed_dish"
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "label-result.schema.json",
+  "title": "LabelResult",
+  "description": "Response body of POST /label/read. Values the model couldn't read are null and listed in flagged, so the app can ask the user to fill them in.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["per_100g", "per_serving", "serving_grams", "flagged"],
+  "properties": {
+    "per_100g": {
+      "anyOf": [{ "$ref": "ingredient-item.schema.json#/$defs/macros" }, { "type": "null" }]
+    },
+    "per_serving": {
+      "anyOf": [{ "$ref": "ingredient-item.schema.json#/$defs/macros" }, { "type": "null" }]
+    },
+    "serving_grams": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
+    "flagged": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Dotted names of fields that were unreadable or failed a check (kcal ≈ 4·protein + 4·carbs + 9·fat; per_serving ≈ per_100g × serving_grams / 100), e.g. \"per_100g.fat\". Empty when everything checks out.",
+      "items": { "type": "string" }
+    }
+  }
+}

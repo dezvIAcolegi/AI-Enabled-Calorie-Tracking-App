@@ -7,4 +7,8 @@ __pycache__/
 .expo/
 .claude/settings.local.json
 graphify-out/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.claude/worktrees/
 *.graphify-bak
