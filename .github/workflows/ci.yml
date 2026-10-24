@@ -1,0 +1,170 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Decides which jobs run, so a change in /app doesn't run the backend checks.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      ai: ${{ steps.filter.outputs.ai }}
+      supabase: ${{ steps.filter.outputs.supabase }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'app/**'
+              - 'contracts/ts/**'
+              - '.github/workflows/ci.yml'
+            ai:
+              - 'ai/**'
+              - 'contracts/ai/**'
+              - 'contracts/openapi.yaml'
+              - '.github/workflows/ci.yml'
+            supabase:
+              - 'supabase/**'
+              - 'contracts/db/**'
+              - '.github/workflows/ci.yml'
+
+  # Mihai: CI expects `npm run lint` in app/package.json; tsc uses app/tsconfig.json,
+  # which should include ../contracts/ts.
+  app:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: project
+        run: |
+          if [ -f app/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No app/package.json yet; skipping."
+          fi
+      - if: steps.project.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - if: steps.project.outputs.present == 'true'
+        working-directory: app
+        run: npm ci
+      - if: steps.project.outputs.present == 'true'
+        working-directory: app
+        run: npm run lint
+      - if: steps.project.outputs.present == 'true'
+        working-directory: app
+        run: npx tsc --noEmit
+
+  # Lucas & Sebi: CI expects ai/pyproject.toml (with a `dev` extra) or
+  # ai/requirements.txt, and ai/scripts/check_openapi.py that exits non-zero when
+  # the FastAPI app's OpenAPI differs from contracts/openapi.yaml.
+  ai:
+    needs: changes
+    if: needs.changes.outputs.ai == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai
+    steps:
+      - uses: actions/checkout@v4
+      - id: project
+        run: |
+          if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No Python project in /ai yet; skipping."
+          fi
+      - if: steps.project.outputs.present == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - if: steps.project.outputs.present == 'true'
+        name: Install
+        run: |
+          if [ -f pyproject.toml ]; then pip install -e ".[dev]"; else pip install -r requirements.txt; fi
+          pip install ruff pytest
+      - if: steps.project.outputs.present == 'true'
+        run: ruff check .
+      - if: steps.project.outputs.present == 'true'
+        run: ruff format --check .
+      - if: steps.project.outputs.present == 'true'
+        name: pytest (no tests yet is not a failure)
+        run: pytest || [ $? -eq 5 ]
+      - if: steps.project.outputs.present == 'true'
+        name: OpenAPI matches contracts/openapi.yaml
+        run: |
+          if [ -f scripts/check_openapi.py ]; then
+            python scripts/check_openapi.py
+          else
+            echo "ai/scripts/check_openapi.py not written yet; skipping."
+          fi
+
+  # Backend checks need no database: integration tests run against the dev
+  # project before a PR is opened (see the PR template).
+  supabase:
+    needs: changes
+    if: needs.changes.outputs.supabase == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: contracts/db mirrors supabase/migrations
+        run: deno run --allow-read supabase/scripts/check-contracts-sync.ts
+      - name: Applied migrations are never edited
+        if: github.event_name == 'pull_request'
+        run: |
+          changed=$(git diff --name-only --diff-filter=MDR "origin/${{ github.base_ref }}...HEAD" -- supabase/migrations)
+          if [ -n "$changed" ]; then
+            echo "Existing migrations changed. Add a new migration instead:"
+            echo "$changed"
+            exit 1
+          fi
+      - name: Format and lint TypeScript
+        run: |
+          files=$(find supabase/functions supabase/scripts supabase/tests -name '*.ts' 2>/dev/null || true)
+          if [ -z "$files" ]; then echo "No TypeScript yet; skipping."; exit 0; fi
+          deno fmt --check $files
+          deno lint $files
+      - name: Edge Function unit tests
+        run: |
+          tests=$(find supabase/functions -name '*_test.ts' -o -name '*.test.ts' 2>/dev/null || true)
+          if [ -z "$tests" ]; then echo "No function tests yet; skipping."; exit 0; fi
+          deno test --allow-env --allow-read $tests
+
+  # The single check branch protection requires. Skipped jobs count as passed.
+  ci-ok:
+    if: always()
+    needs: [changes, app, ai, supabase]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All jobs passed or were skipped
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job failed."
+            exit 1
+          fi

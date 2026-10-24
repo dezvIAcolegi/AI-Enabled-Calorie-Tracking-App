@@ -18,6 +18,31 @@ Supabase in the **EU region**: Postgres, Auth, Storage, RLS, Edge Functions. Kev
 
 `/app`, `/ai`, `/eval`, and `/contracts` other than `contracts/db` (still via an all-four PR).
 
+## Working without Docker
+
+Nothing runs locally. There are two hosted projects: **dev** (Kevin's sandbox: push and test here first, reset freely) and **shared** (the team's: only merged changes). Never use `supabase start`, `functions serve`, `db diff`, `db dump`, `test db` or `--local`; they need Docker. Use the dashboard SQL Editor, Advisors and Logs for one-off checks.
+
+## Conventions
+
+- Every schema change is a **new** migration (`supabase migration new <name>`). Never edit an applied migration or change the hosted DB by hand.
+- `contracts/db` holds an identical copy of every migration. Run the sync script with `--write` after adding one; CI fails if they differ.
+- Every new table gets RLS and a test proving another user can't touch its rows.
+- Check which project is linked before `db push`. `db reset --linked` only ever on dev.
+
 ## Commands
 
-Add run, test and lint commands here once the Supabase project is scaffolded.
+| Task | Command |
+|---|---|
+| Log in (once) | `supabase login` |
+| Point the CLI at dev / shared | `supabase link --project-ref <dev-ref>` / `<shared-ref>` |
+| New migration | `supabase migration new <name>` |
+| Copy migrations into `contracts/db` | `deno run --allow-read --allow-write supabase/scripts/check-contracts-sync.ts --write` |
+| Check the copy (as CI does) | `deno run --allow-read supabase/scripts/check-contracts-sync.ts` |
+| Apply migrations to the linked project | `supabase db push` |
+| Applied migrations on the linked project | `supabase migration list` |
+| Wipe and rebuild (**dev only**) | `supabase db reset --linked` |
+| Deploy a function | `supabase functions deploy <name> --use-api` |
+| Set a function secret | `supabase secrets set KEY=value` |
+| Format and lint, as CI does | `deno fmt --check supabase/scripts` and `deno lint supabase/scripts` |
+
+Env files: copy `supabase/.env.example` to `.env.dev` and `.env.shared` (git-ignored).
