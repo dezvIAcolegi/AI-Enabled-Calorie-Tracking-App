@@ -8,6 +8,7 @@ includes this router.
 import json
 from functools import cache
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -24,7 +25,9 @@ def _fixture(name: str) -> MealResponse:
 
 
 @router.post("/photo", response_model=MealResponse)
-async def meal_photo(image: UploadFile = File(description="Meal photo, JPEG or PNG")) -> MealResponse:
+async def meal_photo(
+    image: Annotated[UploadFile, File(description="Meal photo, JPEG or PNG")],
+) -> MealResponse:
     if not (image.content_type or "").startswith("image/"):
         raise HTTPException(status_code=415, detail="image must be an image file")
     return _fixture("meal-photo.response.json")
