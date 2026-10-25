@@ -3,11 +3,24 @@
 Measures how well `POST /meal/photo` finds the foods on a plate and estimates their grams and kcal.
 
 ```
-fetch_nutrition5k.py      downloads the Nutrition5k test set (photos + truth)
-truth_nutrition5k.csv     weighed truth for those photos, one row per ingredient
-photos/nutrition5k/       the downloaded photos (git-ignored; re-run the script)
-phase0_model_check.*      Phase 0 model choice, see phase0_model_check.md
+fetch_nutrition5k.py          downloads the Nutrition5k test set (photos + truth)
+truth_nutrition5k.csv         weighed truth for those photos, one row per ingredient
+nutrition5k_ingredients.csv   the dataset's per-gram nutrition table, for scoring
+photos/nutrition5k/           the downloaded photos (git-ignored; re-run the script)
+run_nutrition5k.py            sends the photos to Gemini → predictions_nutrition5k.json
+score_meal.py                 prints the accuracy table → scores_nutrition5k.csv (worst first)
+phase0_model_check.*          Phase 0 model choice, see phase0_model_check.md
 ```
+
+## Run
+
+```sh
+py eval/meal/fetch_nutrition5k.py                          # stdlib only
+ai/.venv/Scripts/python eval/meal/run_nutrition5k.py       # needs GEMINI_API_KEY in ai/.env
+py eval/meal/score_meal.py                                 # stdlib only
+```
+
+`run_nutrition5k.py` saves after every photo and skips photos already done, so after a free-tier stop just run it again.
 
 ## Nutrition5k
 
@@ -32,4 +45,10 @@ Limits: 640×480 photos taken straight down by a fixed rig, so they're easier th
 | `grams` | Weighed grams |
 | `kcal`, `protein`, `carbs`, `fat` | For those grams (not per 100 g). May be blank for `own` rows |
 
-Half of the Nutrition5k ingredients weigh under 5 g (oil, salt, herbs). Scoring should ignore small ingredients for detection but keep them in the kcal total.
+## Scoring
+
+- **Plate kcal and grams:** mean absolute and mean % error of the plate total. Every ingredient counts, including oil and salt. The "always guess the average plate" line is a baseline any model must beat.
+- **Recall:** share of weighed ingredients of at least 10 g that the model found. Half of the Nutrition5k ingredients weigh under 5 g (oil, salt, herbs), and nobody can see those in a photo.
+- **Precision:** share of predicted items that match any weighed ingredient.
+- **Name matching** is by shared words ("grilled chicken breast" = "chicken"), so it's crude: "olive oil" matches "olives", and "lettuce" doesn't match "mixed greens". Read detection numbers as a rough floor.
+- **Predicted kcal** = grams × kcal/g of the closest name in `nutrition5k_ingredients.csv`, because `/meal` has no food matching yet. Once it does, score the endpoint's own `per_100g` instead.

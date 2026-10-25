@@ -12,6 +12,7 @@ Standard library only. Re-running skips photos already downloaded.
 
 import argparse
 import csv
+import itertools
 import random
 import urllib.error
 import urllib.request
@@ -21,6 +22,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 BASE = "https://storage.googleapis.com/nutrition5k_dataset/nutrition5k_dataset"
 METADATA = ["metadata/dish_metadata_cafe1.csv", "metadata/dish_metadata_cafe2.csv"]
+INGREDIENTS = "metadata/ingredients_metadata.csv"  # per-gram nutrition, used by score_meal.py
 # The depth split is the dishes that have an overhead RGB-D photo.
 TEST_IDS = "dish_ids/splits/depth_test_ids.txt"
 
@@ -59,7 +61,7 @@ def partial_scans(dishes: dict[str, dict]) -> set[str]:
     """Dishes that are an earlier step of the next scan of the same plate."""
     ordered = sorted(dishes, key=timestamp)
     partial = set()
-    for current, following in zip(ordered, ordered[1:]):
+    for current, following in itertools.pairwise(ordered):
         names = {i[0] for i in dishes[current]["ingredients"]}
         next_names = {i[0] for i in dishes[following]["ingredients"]}
         close = timestamp(following) - timestamp(current) <= INCREMENT_GAP_S
@@ -88,7 +90,10 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=1, help="random seed for the selection")
     parser.add_argument("--photos", type=Path, default=HERE / "photos" / "nutrition5k")
     parser.add_argument("--truth", type=Path, default=HERE / "truth_nutrition5k.csv")
+    parser.add_argument("--ingredients", type=Path, default=HERE / "nutrition5k_ingredients.csv")
     args = parser.parse_args()
+
+    args.ingredients.write_bytes(fetch(INGREDIENTS))
 
     dishes = load_dishes()
     test_ids = fetch(TEST_IDS).decode().split()

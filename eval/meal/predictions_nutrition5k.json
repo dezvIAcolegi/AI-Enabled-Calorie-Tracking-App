@@ -1,0 +1,337 @@
+{
+  "dish_1556575327.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 1.8,
+    "items": [
+      {
+        "name": "kalamata olives",
+        "grams": 60.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "roasted brussels sprouts",
+        "grams": 85.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "sliced celery",
+        "grams": 45.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557862345.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.6,
+    "items": [
+      {
+        "name": "diced chicken breast",
+        "grams": 75.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557862783.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.5,
+    "items": [
+      {
+        "name": "grilled beef steak",
+        "grams": 130.0,
+        "confidence": 0.85
+      },
+      {
+        "name": "steamed cauliflower",
+        "grams": 90.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "diced chicken breast",
+        "grams": 80.0,
+        "confidence": 0.85
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557936555.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.4,
+    "items": [
+      {
+        "name": "scrambled eggs",
+        "grams": 110.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557937037.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.0,
+    "items": [
+      {
+        "name": "raspberries",
+        "grams": 50.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557937157.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 7.8,
+    "items": [
+      {
+        "name": "scrambled eggs",
+        "grams": 110.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "bacon",
+        "grams": 30.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "steamed broccoli",
+        "grams": 85.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "raspberries",
+        "grams": 40.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "strawberries",
+        "grams": 50.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557937335.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.1,
+    "items": [
+      {
+        "name": "roasted sweet potato",
+        "grams": 45.0,
+        "confidence": 0.85
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1557937427.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 1.8,
+    "items": [
+      {
+        "name": "scrambled eggs",
+        "grams": 35.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558030289.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 6.6,
+    "items": [
+      {
+        "name": "honeydew melon",
+        "grams": 120.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558031133.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 16.9,
+    "items": [
+      {
+        "name": "roasted sweet potato",
+        "grams": 140.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558031237.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 45.9,
+    "items": [
+      {
+        "name": "cantaloupe melon",
+        "grams": 130.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558031394.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.4,
+    "items": [
+      {
+        "name": "cantaloupe",
+        "grams": 120.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "watermelon",
+        "grams": 80.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "roasted sweet potato",
+        "grams": 100.0,
+        "confidence": 0.85
+      },
+      {
+        "name": "roasted potato",
+        "grams": 90.0,
+        "confidence": 0.85
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558110478.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.6,
+    "items": [
+      {
+        "name": "scrambled eggs",
+        "grams": 75.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "roasted sweet potato",
+        "grams": 90.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "bacon",
+        "grams": 25.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "raspberries",
+        "grams": 25.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "blackberries",
+        "grams": 30.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558113477.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.5,
+    "items": [
+      {
+        "name": "almonds",
+        "grams": 35.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558113941.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 3.2,
+    "items": [
+      {
+        "name": "almonds",
+        "grams": 35.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "spinach salad",
+        "grams": 30.0,
+        "confidence": 0.85
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558114145.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.2,
+    "items": [
+      {
+        "name": "red seedless grapes",
+        "grams": 70.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "green seedless grapes",
+        "grams": 5.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558114284.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 2.3,
+    "items": [
+      {
+        "name": "apple",
+        "grams": 180.0,
+        "confidence": 0.95
+      },
+      {
+        "name": "cantaloupe",
+        "grams": 120.0,
+        "confidence": 0.9
+      },
+      {
+        "name": "grapes",
+        "grams": 80.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558372948.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 4.4,
+    "items": [
+      {
+        "name": "almonds",
+        "grams": 100.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558375667.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 4.5,
+    "items": [
+      {
+        "name": "almonds",
+        "grams": 95.0,
+        "confidence": 0.9
+      }
+    ],
+    "warnings": []
+  },
+  "dish_1558375732.png": {
+    "model": "gemini-3.5-flash",
+    "seconds": 35.4,
+    "items": [
+      {
+        "name": "grapes",
+        "grams": 60.0,
+        "confidence": 0.95
+      }
+    ],
+    "warnings": []
+  }
+}
