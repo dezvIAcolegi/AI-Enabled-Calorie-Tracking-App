@@ -1,10 +1,10 @@
 """Score meal photo predictions against weighed truth. Stdlib only.
 
     python eval/meal/score_meal.py
-    python eval/meal/score_meal.py --truth my_truth.csv --predictions my_preds.json
+    python eval/meal/score_meal.py --predictions eval/meal/predictions_gemini-3.5-flash.json
 
 Prints plate-level kcal and gram error, ingredient detection precision/recall and per-item
-gram error, and writes one row per photo to scores_nutrition5k.csv for picking failure examples.
+gram error, and writes one row per photo to scores_<model>.csv for picking failure examples.
 
 There is no food matching in /meal yet, so predicted kcal comes from looking up each predicted
 name in nutrition5k_ingredients.csv (the dataset's own USDA-based table). Names are matched by
@@ -117,10 +117,14 @@ def pct(x: float) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--truth", type=Path, default=HERE / "truth_nutrition5k.csv")
-    parser.add_argument("--predictions", type=Path, default=HERE / "predictions_nutrition5k.json")
+    parser.add_argument(
+        "--predictions", type=Path, default=HERE / "predictions_gemini-3.5-flash-lite.json"
+    )
     parser.add_argument("--ingredients", type=Path, default=HERE / "nutrition5k_ingredients.csv")
-    parser.add_argument("--out", type=Path, default=HERE / "scores_nutrition5k.csv")
+    parser.add_argument("--out", type=Path, help="default: scores_<model>.csv next to the predictions")
     args = parser.parse_args()
+    model = args.predictions.stem.removeprefix("predictions_")
+    args.out = args.out or args.predictions.with_name(f"scores_{model}.csv")
 
     truth = load_truth(args.truth)
     predictions = json.loads(args.predictions.read_text(encoding="utf-8"))

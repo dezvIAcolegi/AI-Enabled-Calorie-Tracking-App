@@ -7,8 +7,8 @@ fetch_nutrition5k.py          downloads the Nutrition5k test set (photos + truth
 truth_nutrition5k.csv         weighed truth for those photos, one row per ingredient
 nutrition5k_ingredients.csv   the dataset's per-gram nutrition table, for scoring
 photos/nutrition5k/           the downloaded photos (git-ignored; re-run the script)
-run_nutrition5k.py            sends the photos to Gemini → predictions_nutrition5k.json
-score_meal.py                 prints the accuracy table → scores_nutrition5k.csv (worst first)
+run_nutrition5k.py            sends the photos to Gemini → predictions_<model>.json
+score_meal.py                 prints the accuracy table → scores_<model>.csv (worst first)
 phase0_model_check.*          Phase 0 model choice, see phase0_model_check.md
 ```
 
@@ -37,7 +37,7 @@ Limits: 640×480 photos taken straight down by a fixed rig, so they're easier th
 
 ## Results (25 Oct 2026, Phase 0 prompt, no food matching)
 
-The free tier allows only **20 requests/day per project for `gemini-3.5-flash`**, so Flash has 20 plates; Flash-lite ran all 150 (`predictions_nutrition5k_lite.json`, `scores_nutrition5k_lite.csv`).
+The free tier allows only **20 requests/day per project for `gemini-3.5-flash`**, so Flash has 20 plates and Flash-lite, now the default, ran all 150. Score Flash with `--predictions eval/meal/predictions_gemini-3.5-flash.json`.
 
 | | Flash, 20 plates | Flash-lite, same 20 | Flash-lite, 150 plates |
 |---|---|---|---|

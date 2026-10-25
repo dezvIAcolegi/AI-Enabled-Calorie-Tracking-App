@@ -4,7 +4,9 @@ Uses the Phase 0 prompt and model choice (phase0_model_check.py). Results are sa
 photo, so an interrupted run (free-tier daily cap, Ctrl+C) picks up where it stopped.
 
     ai/.venv/Scripts/python eval/meal/run_nutrition5k.py
-    ai/.venv/Scripts/python eval/meal/run_nutrition5k.py --model gemini-3.5-flash-lite
+    ai/.venv/Scripts/python eval/meal/run_nutrition5k.py --model gemini-3.5-flash
+
+Each model gets its own predictions_<model>.json.
 
 Reads GEMINI_API_KEY from ai/.env. Needs google-genai, pillow, pydantic.
 """
@@ -61,11 +63,12 @@ def detect(client: genai.Client, model: str, jpeg: bytes) -> tuple[Detection, fl
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--model", default="gemini-3.5-flash")
+    parser.add_argument("--model", default="gemini-3.5-flash-lite")
     parser.add_argument("--photos", type=Path, default=HERE / "photos" / "nutrition5k")
     parser.add_argument("--truth", type=Path, default=HERE / "truth_nutrition5k.csv")
-    parser.add_argument("--out", type=Path, default=HERE / "predictions_nutrition5k.json")
+    parser.add_argument("--out", type=Path, help="default: predictions_<model>.json here")
     args = parser.parse_args()
+    args.out = args.out or HERE / f"predictions_{args.model}.json"
 
     with args.truth.open(encoding="utf-8") as f:
         photos = sorted({row["photo"] for row in csv.DictReader(f)})
