@@ -69,12 +69,24 @@ def load_kcal_per_gram(path: Path) -> dict[str, float]:
 
 
 def lookup_kcal_per_gram(name: str, table: dict[str, float]) -> tuple[float, bool]:
-    """kcal/g of the closest table entry, and whether it shared enough words to trust."""
+    """kcal/g for a predicted name, and whether any table entry shared a word with it.
+
+    An entry holding every word of the name wins ("brown rice"). Otherwise a dish name is
+    averaged over the best entry for each of its words ("penne pasta with beef and spinach"
+    → pasta, beef, spinach). With no shared word at all, the table's median is used.
+    """
+    name_words = words(name)
     best = max(table, key=lambda entry: similarity(name, entry))
-    if similarity(name, best) >= MIN_WORD_OVERLAP:
+    if name_words and name_words <= words(best):
         return table[best], True
-    closest = difflib.get_close_matches(name.lower(), table, n=1, cutoff=0)
-    return table[closest[0] if closest else best], False
+    per_word = []
+    for word in name_words:
+        entries = [entry for entry in table if word in words(entry)]
+        if entries:
+            per_word.append(table[max(entries, key=lambda entry: similarity(name, entry))])
+    if per_word:
+        return statistics.mean(per_word), True
+    return statistics.median(table.values()), False
 
 
 def match_items(predicted: list[dict], truth: list[dict]) -> list[tuple[int, int]]:
@@ -178,7 +190,7 @@ def main() -> None:
     if item_gram_errors:
         print(f"  gram error per found item        mean abs {statistics.mean(map(abs, item_gram_errors)):.0f} g, "
               f"median signed {statistics.median(item_gram_errors):+.0f} g")
-    print(f"\nkcal lookups without a word match: {untrusted_lookups}/{n_preds} (closest spelling used)")
+    print(f"\nkcal lookups without a word match: {untrusted_lookups}/{n_preds} (table median used)")
 
     with args.out.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))

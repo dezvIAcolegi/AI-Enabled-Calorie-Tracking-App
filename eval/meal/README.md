@@ -35,6 +35,21 @@ It uses the official test split, keeps only dishes with an overhead photo, drops
 
 Limits: 640×480 photos taken straight down by a fixed rig, so they're easier than phone photos, and no Romanian food. Our own weighed photos cover both.
 
+## Results (25 Oct 2026, Phase 0 prompt, no food matching)
+
+The free tier allows only **20 requests/day per project for `gemini-3.5-flash`**, so Flash has 20 plates; Flash-lite ran all 150 (`predictions_nutrition5k_lite.json`, `scores_nutrition5k_lite.csv`).
+
+| | Flash, 20 plates | Flash-lite, same 20 | Flash-lite, 150 plates |
+|---|---|---|---|
+| Plate kcal error | 43 kcal (23%) | 53 kcal (26%) | 109 kcal (32%) |
+| Baseline: always guess the average plate | 155 kcal | 155 kcal | 207 kcal |
+| Plate gram error | 28 g (25%) | 29 g (30%) | 67 g (26%) |
+| Plates underestimated | 5/20 | 16/20 | 103/150 |
+| Recall / precision (items ≥ 10 g) | 78% / 74% | 78% / 74% | 63% / 75% |
+| Median latency | 2.5 s | 1.1 s | 1.9 s |
+
+The first 20 plates are easier than the average plate (baseline 155 vs 207 kcal). Flash-lite underestimates big plates most: hidden oil (one plate had 45 g of olive oil, ~400 kcal) and portions guessed too small.
+
 ## truth CSV
 
 | Column | Meaning |
