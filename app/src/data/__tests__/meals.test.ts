@@ -1,7 +1,7 @@
 import mealPhoto from '../../../../contracts/fixtures/meal-photo.response.json';
 import type { MealResponse } from '@/api';
 
-import { friendlyDbError, mealTotals, mealTypeFor, saveMealPayload } from '../meals';
+import { friendlyDbError, itemsFromMeal, mealTotals, mealTypeFor, saveMealPayload } from '../meals';
 
 // Hoisted above the imports by babel-jest.
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
@@ -82,4 +82,73 @@ it('explains a missing save_meal', () => {
   expect(friendlyDbError('Could not find the function public.save_meal(items, meal)')).toMatch(
     /not available/,
   );
+});
+
+describe('itemsFromMeal', () => {
+  const base = {
+    id: 'm',
+    eaten_at: '',
+    meal_type: 'lunch' as const,
+    source: 'photo' as const,
+    note: null,
+    photo_path: null,
+  };
+
+  it('rebuilds editable items from the saved snapshot', () => {
+    const [item] = itemsFromMeal({
+      ...base,
+      meal_items: [
+        {
+          id: 'i',
+          name: 'eggs',
+          grams: 120,
+          kcal: 177.6,
+          protein: 12,
+          carbs: 1.92,
+          fat: 13.2,
+          food_id: 'fdc:173424',
+          confidence: 0.72,
+          kcal_100g: 148,
+          protein_100g: 10,
+          carbs_100g: 1.6,
+          fat_100g: 11,
+        },
+      ],
+    });
+    expect(item).toEqual({
+      name: 'eggs',
+      food_id: 'fdc:173424',
+      grams: 120,
+      confidence: 0.72,
+      per_100g: { kcal: 148, protein: 10, carbs: 1.6, fat: 11 },
+      candidates: [
+        {
+          food_id: 'fdc:173424',
+          name: 'eggs',
+          per_100g: { kcal: 148, protein: 10, carbs: 1.6, fat: 11 },
+        },
+      ],
+    });
+  });
+
+  it('survives a deleted food and old rows without per-100 g values', () => {
+    const [item] = itemsFromMeal({
+      ...base,
+      meal_items: [
+        {
+          id: 'x',
+          name: 'old',
+          grams: 50,
+          kcal: 100,
+          protein: 5,
+          carbs: 10,
+          fat: 2,
+          food_id: null,
+        },
+      ],
+    });
+    expect(item!.food_id).toMatch(/^manual:/);
+    expect(item!.per_100g).toEqual({ kcal: 200, protein: 10, carbs: 20, fat: 4 });
+    expect(item!.confidence).toBe(1);
+  });
 });

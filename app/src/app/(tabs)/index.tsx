@@ -8,6 +8,7 @@ import { font, useTheme } from '@/components/theme';
 import { deleteMeal, mealsBetween, mealTotals, type MealRow } from '@/data/meals';
 import { dayBounds, getProfile, type Profile } from '@/data/profile';
 import { MealCard } from '@/features/history/MealCard';
+import { editMeal } from '@/features/meal/editSaved';
 import { useAiMocks } from '@/lib/env';
 
 const ORDER = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 } as const;
@@ -137,7 +138,9 @@ export default function TodayScreen() {
           action={{ title: 'Log a meal', onPress: () => router.push('/scan') }}
         />
       ) : (
-        sorted.map((m) => <MealCard key={m.id} meal={m} onLongPress={() => remove(m)} />)
+        sorted.map((m) => (
+          <MealCard key={m.id} meal={m} onPress={() => editMeal(m)} onLongPress={() => remove(m)} />
+        ))
       )}
       {sorted.length > 0 && (
         <Button title="Log another meal" kind="secondary" onPress={() => router.push('/scan')} />

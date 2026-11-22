@@ -8,6 +8,7 @@ import { mealsBetween, mealTotals, type MealRow } from '@/data/meals';
 import { dayBounds } from '@/data/profile';
 import { parseDayKey } from '@/features/history/days';
 import { MealCard } from '@/features/history/MealCard';
+import { editMeal } from '@/features/meal/editSaved';
 
 export default function DayScreen() {
   const t = useTheme();
@@ -51,7 +52,7 @@ export default function DayScreen() {
           <Text style={{ color: t.muted, fontSize: font.body }}>Day total</Text>
           <MacroSummary m={total} size="large" />
           {[...meals].reverse().map((m) => (
-            <MealCard key={m.id} meal={m} />
+            <MealCard key={m.id} meal={m} onPress={() => editMeal(m)} />
           ))}
         </>
       )}
