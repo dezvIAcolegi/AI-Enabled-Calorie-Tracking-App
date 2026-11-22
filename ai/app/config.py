@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 
     # Empty defaults so the app starts without keys; auth rejects every request until supabase_url is set.
     gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash-lite"  # Flash: only 20 free requests/day
     supabase_url: str = ""  # https://<ref>.supabase.co, not secret
     # Publishable key; foods search runs with the caller's token, so RLS applies.
     supabase_anon_key: str = ""

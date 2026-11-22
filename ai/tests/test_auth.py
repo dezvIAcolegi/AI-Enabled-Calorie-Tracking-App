@@ -10,6 +10,8 @@ from fastapi.testclient import TestClient
 
 from app import auth
 from app.config import Settings
+from app.label import router as label_router
+from app.label.schemas import LabelResult
 from app.main import app
 from app.nutrition import router as nutrition_router
 
@@ -40,6 +42,12 @@ async def _no_foods(q, token):
     return []
 
 
+async def _fixture_label(data):
+    return LabelResult(
+        per_100g=None, per_serving=None, serving_grams=None, flagged=["per_100g"]
+    )
+
+
 def make_token(key=KEY, alg="ES256", kid=KID, **overrides) -> str:
     claims = {
         "sub": "user-1",
@@ -64,6 +72,9 @@ def client(monkeypatch):
     monkeypatch.setattr(
         nutrition_router, "_search", _no_foods
     )  # foods DB is tested in tests/nutrition
+    monkeypatch.setattr(
+        label_router, "read_label", _fixture_label
+    )  # reader is tested in tests/label
     return TestClient(app)
 
 
