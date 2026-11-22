@@ -5,6 +5,9 @@ export const env = {
   supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
 };
 
-/** No AI URL configured: api/ answers from contracts/fixtures instead of the network. */
-export const useAiMocks = env.aiUrl === '';
 export const hasSupabase = env.supabaseUrl !== '' && env.supabaseAnonKey !== '';
+/**
+ * api/ answers from contracts/fixtures when there's no AI URL, or no Supabase to sign in
+ * with: every real AI call needs the user's access token, so it would only ever fail.
+ */
+export const useAiMocks = env.aiUrl === '' || !hasSupabase;
