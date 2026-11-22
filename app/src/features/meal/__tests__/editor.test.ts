@@ -2,6 +2,7 @@ import mealPhoto from '../../../../../contracts/fixtures/meal-photo.response.jso
 import type { MealResponse } from '@/api';
 
 import {
+  warningText,
   editorReducer,
   initEditor,
   itemMacros,
@@ -105,4 +106,12 @@ describe('parseGrams', () => {
   it.each(['', 'abc', '-5', '0', '6000', '1e3', '12,5,1'])('rejects %p', (t) =>
     expect(parseGrams(t)).toBeNull(),
   );
+});
+
+describe('warningText', () => {
+  it('explains known warnings and survives unknown ones', () => {
+    expect(warningText('mixed_dish')).toMatch(/estimates/);
+    expect(warningText('unmatched_food')).toMatch(/Add food/);
+    expect(warningText('brand_new_value')).toMatch(/Check these items/);
+  });
 });

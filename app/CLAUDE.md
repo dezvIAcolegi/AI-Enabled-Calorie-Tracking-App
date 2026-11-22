@@ -46,8 +46,16 @@ Copy `.env.example` to `.env`. With `EXPO_PUBLIC_AI_URL` empty the app answers f
 
 ## Layout
 
-- `src/app/`: Expo Router routes. `(auth)/` sign-in, `(tabs)/` Today, Scan, Library, Recipes, History; `profile` is pushed from Today.
-- `src/api/`: one typed function per AI endpoint (`index.ts`), fetch + token + timeouts + error kinds (`client.ts`), fixture mocks (`mocks.ts`).
-- `src/api/types.ts` + `contract-check.ts`: **temporary** mirror of `contracts/ai/*.schema.json` until `contracts/ts/api.ts` exists; delete both then. `contract-check.ts` fails `tsc` if they drift from `macros.ts`.
-- `src/lib/`: env, Supabase client, auth context, photo resize (1024 px JPEG).
+- `src/app/`: Expo Router routes. `(auth)/sign-in`; `(tabs)/` Today, Scan, Library, Recipes, History; `profile`; `capture?mode=meal|label|barcode`; `meal/edit` (ingredient editor), `meal/search`, `meal/text`; `label/review`; `product/barcode`, `product/log`; `library/add|pick|[id]`; `recipe/edit|[id]`; `history/[day]`.
+- `src/api/`: one typed function per AI endpoint (`index.ts`), fetch + token + timeouts + error kinds (`client.ts`), fixture mocks (`mocks.ts`), `warmUp()` for the sleeping free host.
+- `src/api/types.ts`: aliases of the generated `contracts/ts/api.ts` (`components['schemas']`); never hand-write a contract shape. `contract-check.ts` fails `tsc` if the generated `Macros`/`IngredientItem` stop fitting `macros.ts`.
+- `src/data/`: Supabase access (meals via `save_meal`, foods/products, barcode-lookup, recipes, profile, delete-account). With no Supabase env, each falls back to a device-only store (`local*.ts`) so every flow can be demoed.
+- `src/features/`: pure logic with tests (`meal/editor.ts`, `meal/portions.ts`, `label/form.ts`, `history/days.ts`) plus small cross-screen stores (`draft.ts`, `pick.ts`, `product/active.ts`).
 - `metro.config.js` watches `../contracts` so `@contracts/macros` and the fixtures bundle.
+
+## Rules learned from teammates
+
+- `/label/read`: an unreadable nutrient may come back as `0` **and** be listed in `flagged` (or as `null` once `LabelMacros` lands). Flagged fields start empty and are required; never save a flagged 0.
+- 429 `detail`: `daily_scan_cap` (30 AI scans/user/day, `scan_quota()`) vs `model_quota` (shared Gemini quota); messages in `api/client.ts`.
+- `save_meal` rejects macros that don't equal `per_100g × grams / 100`: always send `macrosFor()` output, never rounded values.
+- Show "Data from Open Food Facts" wherever barcode results appear (ODbL).

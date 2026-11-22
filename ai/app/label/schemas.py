@@ -2,13 +2,22 @@
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.nutrition.schemas import Macros
+
+class LabelMacros(BaseModel):
+    """Like Macros, but a value the model couldn't read is null (and listed in flagged)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kcal: float | None = Field(ge=0)
+    protein: float | None = Field(ge=0)
+    carbs: float | None = Field(ge=0)
+    fat: float | None = Field(ge=0)
 
 
 class LabelResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    per_100g: Macros | None
-    per_serving: Macros | None
+    per_100g: LabelMacros | None
+    per_serving: LabelMacros | None
     serving_grams: float | None = Field(gt=0)
     flagged: list[str]  # dotted field names, e.g. "per_100g.fat"

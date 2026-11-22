@@ -104,7 +104,7 @@ export const itemMacros = (i: EditorItem): Nutrients => macrosFor(i.per_100g, i.
 export const totals = (s: EditorState): Nutrients => sumMacros(s.items);
 
 /** What the user should be told about this result, in plain words. */
-export function warningText(w: MealWarning): string {
+export function warningText(w: MealWarning | string): string {
   switch (w) {
     case 'no_food_detected':
       return 'No food was found. Add items with search, or try another photo.';
@@ -114,5 +114,9 @@ export function warningText(w: MealWarning): string {
       return 'Mixed dish: ingredients and grams are estimates. Adjust them if you can.';
     case 'text_unclear':
       return 'Part of your description could not be understood. Add anything that is missing.';
+    case 'unmatched_food': // proposed by meal-ai (board, 22 Nov)
+      return "Some foods couldn't be matched. Add them with + Add food.";
+    default: // a value newer than this build: still tell the user something
+      return 'Check these items carefully before saving.';
   }
 }

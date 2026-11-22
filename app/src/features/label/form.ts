@@ -5,6 +5,14 @@ import type { LabelResult, Macros } from '@/api';
 
 export const NUTRIENTS = ['kcal', 'protein', 'carbs', 'fat'] as const;
 export type Nutrient = (typeof NUTRIENTS)[number];
+
+/** A label block where any single value may be unreadable (null), as in `LabelMacros` (PR #23). */
+type LabelBlock = { [K in Nutrient]: number | null };
+/** Accepts today's LabelResult and the nullable LabelMacros version. */
+export type LabelInput = Omit<LabelResult, 'per_100g' | 'per_serving'> & {
+  per_100g: LabelBlock | null;
+  per_serving: LabelBlock | null;
+};
 export type FieldName = `per_100g.${Nutrient}` | 'serving_grams';
 
 export type LabelForm = {
@@ -19,30 +27,28 @@ const FIELDS: FieldName[] = [...NUTRIENTS.map((n) => `per_100g.${n}` as const), 
 
 const fmt = (n: number) => String(Math.round(n * 100) / 100);
 
-export function formFromLabel(r: LabelResult): LabelForm {
+export function formFromLabel(r: LabelInput): LabelForm {
   const flagged = new Set<FieldName>();
   const values = {} as Record<FieldName, string>;
 
-  // Prefer per_100g; if only per_serving was readable, scale it by serving_grams.
-  const derived: Macros | null =
-    r.per_100g ??
-    (r.per_serving && r.serving_grams
-      ? {
-          kcal: (r.per_serving.kcal * 100) / r.serving_grams,
-          protein: (r.per_serving.protein * 100) / r.serving_grams,
-          carbs: (r.per_serving.carbs * 100) / r.serving_grams,
-          fat: (r.per_serving.fat * 100) / r.serving_grams,
-        }
-      : null);
+  // Per nutrient: prefer per_100g; else scale per_serving by serving_grams; else unknown.
+  const valueFor = (n: Nutrient): number | null => {
+    const direct = r.per_100g?.[n];
+    if (direct != null) return direct;
+    const serving = r.per_serving?.[n];
+    if (serving != null && r.serving_grams) return (serving * 100) / r.serving_grams;
+    return null;
+  };
 
   for (const n of NUTRIENTS) {
     const field = `per_100g.${n}` as const;
+    const v = valueFor(n);
     const wasFlagged = r.flagged.includes(field) || r.flagged.includes(`per_serving.${n}`);
-    if (!derived || wasFlagged) {
+    if (v === null || wasFlagged) {
       values[field] = '';
       flagged.add(field);
     } else {
-      values[field] = fmt(derived[n]);
+      values[field] = fmt(v);
     }
   }
   if (r.serving_grams == null || r.flagged.includes('serving_grams')) {

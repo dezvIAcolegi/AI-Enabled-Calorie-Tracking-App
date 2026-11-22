@@ -40,7 +40,9 @@ function Editor() {
   const [state, dispatch] = useReducer(editorReducer, undefined, (): EditorState =>
     initEditor(draft.result.items, draft.result.warnings),
   );
-  const [mealType, setMealType] = useState<MealType>(() => mealTypeFor(new Date()));
+  const [mealType, setMealType] = useState<MealType>(
+    () => draft.existing?.mealType ?? mealTypeFor(new Date()),
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const total = useMemo(() => totals(state), [state]);
@@ -54,8 +56,14 @@ function Editor() {
     setSaving(true);
     setError(null);
     try {
-      const photoPath = draft.photoUri ? await uploadMealPhoto(draft.photoUri) : undefined;
+      const ex = draft.existing;
+      const photoPath = draft.photoUri
+        ? await uploadMealPhoto(draft.photoUri)
+        : (ex?.photoPath ?? undefined);
       const mealId = await saveMeal({
+        id: ex?.id,
+        eatenAt: ex ? new Date(ex.eatenAt) : undefined,
+        note: ex?.note ?? undefined,
         mealType,
         source: draft.source,
         photoPath,
@@ -79,7 +87,7 @@ function Editor() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <Stack.Screen options={{ title: 'Check your meal' }} />
+      <Stack.Screen options={{ title: draft.existing ? 'Edit meal' : 'Check your meal' }} />
       <FlatList
         data={state.items}
         keyExtractor={(i) => i.key}
@@ -124,7 +132,7 @@ function Editor() {
             <MacroSummary m={total} />
           </View>
           <Button
-            title="Save meal"
+            title={draft.existing ? 'Save changes' : 'Save meal'}
             onPress={save}
             loading={saving}
             disabled={state.items.length === 0}

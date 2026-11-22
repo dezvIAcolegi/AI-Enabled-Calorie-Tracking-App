@@ -109,16 +109,58 @@ export type MealRow = {
   source: MealSource;
   note: string | null;
   photo_path: string | null;
-  meal_items: {
-    id: string;
-    name: string;
-    grams: number;
-    kcal: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  }[];
+  meal_items: MealItemRow[];
 };
+
+export type MealItemRow = {
+  id: string;
+  name: string;
+  grams: number;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  /** Snapshot fields; optional so older local rows still load. */
+  food_id?: string | null;
+  confidence?: number | null;
+  kcal_100g?: number;
+  protein_100g?: number;
+  carbs_100g?: number;
+  fat_100g?: number;
+};
+
+/**
+ * A saved meal back as editable ingredient items, from its own snapshot (so later catalogue
+ * changes don't alter it). Old rows without per-100 g values are rebuilt from grams + totals.
+ */
+export function itemsFromMeal(m: MealRow): IngredientItem[] {
+  return m.meal_items.map((i) => {
+    const per =
+      i.kcal_100g !== undefined
+        ? {
+            kcal: i.kcal_100g,
+            protein: i.protein_100g ?? 0,
+            carbs: i.carbs_100g ?? 0,
+            fat: i.fat_100g ?? 0,
+          }
+        : {
+            kcal: (i.kcal * 100) / i.grams,
+            protein: (i.protein * 100) / i.grams,
+            carbs: (i.carbs * 100) / i.grams,
+            fat: (i.fat * 100) / i.grams,
+          };
+    // food_id is null when the food was deleted; save_meal stores unknown ids as null again.
+    const food_id = i.food_id ?? `manual:snapshot-${i.id}`;
+    return {
+      name: i.name,
+      food_id,
+      grams: i.grams,
+      confidence: i.confidence ?? 1,
+      per_100g: per,
+      candidates: [{ food_id, name: i.name, per_100g: per }],
+    };
+  });
+}
 
 /** Meals with eaten_at in [from, to), newest first. Values are the saved snapshot. */
 export async function mealsBetween(from: Date, to: Date): Promise<MealRow[]> {
@@ -126,7 +168,7 @@ export async function mealsBetween(from: Date, to: Date): Promise<MealRow[]> {
   const { data, error } = await supabase
     .from('meals')
     .select(
-      'id, eaten_at, meal_type, source, note, photo_path, meal_items(id, name, grams, kcal, protein, carbs, fat, position)',
+      'id, eaten_at, meal_type, source, note, photo_path, meal_items(id, name, grams, kcal, protein, carbs, fat, position, food_id, confidence, kcal_100g, protein_100g, carbs_100g, fat_100g)',
     )
     .gte('eaten_at', from.toISOString())
     .lt('eaten_at', to.toISOString())
@@ -143,6 +185,11 @@ export async function mealsBetween(from: Date, to: Date): Promise<MealRow[]> {
       protein: Number(i.protein),
       carbs: Number(i.carbs),
       fat: Number(i.fat),
+      confidence: i.confidence == null ? null : Number(i.confidence),
+      kcal_100g: Number(i.kcal_100g),
+      protein_100g: Number(i.protein_100g),
+      carbs_100g: Number(i.carbs_100g),
+      fat_100g: Number(i.fat_100g),
     })),
   }));
 }
@@ -184,7 +231,18 @@ function localRow(input: SaveMealInput): MealRow {
     source: input.source,
     note: input.note?.trim() || null,
     photo_path: input.photoPath ?? null,
-    meal_items: items.map((i, n) => ({ id: `${n}`, name: i.name, grams: i.grams, ...i.macros })),
+    meal_items: items.map((i, n) => ({
+      id: `${n}`,
+      name: i.name,
+      grams: i.grams,
+      ...i.macros,
+      food_id: i.food_id,
+      confidence: i.confidence ?? null,
+      kcal_100g: i.per_100g.kcal,
+      protein_100g: i.per_100g.protein,
+      carbs_100g: i.per_100g.carbs,
+      fat_100g: i.per_100g.fat,
+    })),
   };
 }
 

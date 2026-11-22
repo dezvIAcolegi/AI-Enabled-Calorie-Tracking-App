@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 
 import type { MealResponse } from '@/api';
+import type { MealType } from '@/data/meals';
 
 export type MealSource = 'photo' | 'text' | 'barcode' | 'label' | 'recipe' | 'manual';
 
@@ -15,6 +16,14 @@ export type MealDraft = {
   photoUri?: string;
   /** Raw AI output, kept for the scans table when the user has consented. */
   raw?: MealResponse;
+  /** Set when editing a saved meal: save_meal replaces it instead of adding one. */
+  existing?: {
+    id: string;
+    mealType: MealType;
+    eatenAt: string;
+    photoPath: string | null;
+    note: string | null;
+  };
 };
 
 let draft: MealDraft | null = null;

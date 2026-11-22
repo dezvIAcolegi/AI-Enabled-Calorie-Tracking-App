@@ -13,6 +13,8 @@ from app.config import Settings
 from app.label import router as label_router
 from app.label.schemas import LabelResult
 from app.main import app
+from app.meal import pipeline as meal_pipeline
+from app.meal.schemas import MealResponse
 from app.nutrition import router as nutrition_router
 
 URL = "https://test-ref.supabase.co"
@@ -42,7 +44,11 @@ async def _no_foods(q, token):
     return []
 
 
-async def _fixture_label(data):
+async def _no_meal(data, token):
+    return MealResponse(items=[], warnings=["no_food_detected"])
+
+
+async def _fixture_label(data, token):
     return LabelResult(
         per_100g=None, per_serving=None, serving_grams=None, flagged=["per_100g"]
     )
@@ -75,6 +81,8 @@ def client(monkeypatch):
     monkeypatch.setattr(
         label_router.reader, "read_label", _fixture_label
     )  # reader is tested in tests/label
+    monkeypatch.setattr(meal_pipeline, "photo_meal", _no_meal)  # tested in tests/meal
+    monkeypatch.setattr(meal_pipeline, "text_meal", _no_meal)
     return TestClient(app)
 
 

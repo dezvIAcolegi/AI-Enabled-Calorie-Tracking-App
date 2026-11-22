@@ -7,7 +7,8 @@ import { Banner, Button, Empty, Loading, MacroSummary, ProgressBar } from '@/com
 import { font, useTheme } from '@/components/theme';
 import { deleteMeal, mealsBetween, mealTotals, type MealRow } from '@/data/meals';
 import { dayBounds, getProfile, type Profile } from '@/data/profile';
-import { fmtGrams } from '@/lib/format';
+import { MealCard } from '@/features/history/MealCard';
+import { editMeal } from '@/features/meal/editSaved';
 import { useAiMocks } from '@/lib/env';
 
 const ORDER = { breakfast: 0, lunch: 1, dinner: 2, snack: 3 } as const;
@@ -137,49 +138,9 @@ export default function TodayScreen() {
           action={{ title: 'Log a meal', onPress: () => router.push('/scan') }}
         />
       ) : (
-        sorted.map((m) => {
-          const mt = mealTotals(m);
-          return (
-            <Pressable
-              key={m.id}
-              onLongPress={() => remove(m)}
-              accessibilityHint="Long press to delete"
-              style={[styles.card, { backgroundColor: t.card }]}
-            >
-              <View style={styles.mealHead}>
-                <Text style={{ color: t.text, fontSize: font.large, fontWeight: '700' }}>
-                  {m.meal_type[0]!.toUpperCase() + m.meal_type.slice(1)}
-                </Text>
-                <Text style={{ color: t.muted, fontSize: font.small }}>
-                  {new Date(m.eaten_at).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-                <Text
-                  style={{
-                    color: t.kcal,
-                    fontSize: font.large,
-                    fontWeight: '700',
-                    marginLeft: 'auto',
-                  }}
-                >
-                  {Math.round(mt.kcal)} kcal
-                </Text>
-              </View>
-              {m.meal_items.map((i) => (
-                <View key={i.id} style={styles.item}>
-                  <Text style={{ color: t.text, fontSize: font.body, flex: 1 }} numberOfLines={1}>
-                    {i.name}
-                  </Text>
-                  <Text style={{ color: t.muted, fontSize: font.body }}>
-                    {fmtGrams(i.grams)} g · {Math.round(i.kcal)} kcal
-                  </Text>
-                </View>
-              ))}
-            </Pressable>
-          );
-        })
+        sorted.map((m) => (
+          <MealCard key={m.id} meal={m} onPress={() => editMeal(m)} onLongPress={() => remove(m)} />
+        ))
       )}
       {sorted.length > 0 && (
         <Button title="Log another meal" kind="secondary" onPress={() => router.push('/scan')} />
@@ -191,6 +152,4 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   body: { padding: 16, gap: 12 },
   card: { borderRadius: 12, padding: 16, gap: 10 },
-  mealHead: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
-  item: { flexDirection: 'row', gap: 8 },
 });
