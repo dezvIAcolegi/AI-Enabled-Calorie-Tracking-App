@@ -7,6 +7,7 @@ photos/           label photos (your own only; Gemini free tier may use prompts)
 truth.csv         hand-checked values, one row per photo
 predictions.json  {photo file name: /label/read result}, written by run_label.py
 run_label.py      runs every photo in truth.csv through the label reader
+prefill_truth.py  drafts truth rows from Gemini for new photos -> truth_draft.csv
 score.py          prints the accuracy table
 test_score.py     self-check for score.py
 ```
@@ -40,6 +41,8 @@ Also include a few of each: kJ-only energy, a label with no serving size, per-se
 For each photo:
 1. Name it `<condition>_<nn>.jpg` (e.g. `curved_03.jpg`) and drop it in `photos/`. Phone photos can be committed as they are; the reader resizes them.
 2. Add a row to `truth.csv`, typing the values **from the package itself, not from the app**. Per 100 g; blank `serving_grams` when there is none.
+
+   Or let Gemini draft it: `ai/.venv/Scripts/python eval/label/prefill_truth.py` appends a row per new photo to `truth_draft.csv` (condition from the file name, `ro` for romanian photos). **The draft is the model's own answer**, so an unchecked row scores 100% by construction. Check every value against the package (per 100 g, total carbs and total fat, kJ ÷ 4.184 if only kJ), fix what's wrong, then move the row into `truth.csv`. The read also lands in `predictions.json`, so `run_label.py` won't spend another Gemini call on it.
 3. Run `run_label.py`, then `score.py`.
 
 ## truth.csv
