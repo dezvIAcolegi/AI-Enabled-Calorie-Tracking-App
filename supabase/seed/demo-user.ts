@@ -89,7 +89,7 @@ const DAY_PLANS: MealPlan[][] = [
       meal_type: "breakfast",
       hour: 9,
       source: "photo",
-      items: [["omleta", 150], ["castravete", 100]],
+      items: [["omleta", 150], ["castraveti", 100]],
     },
     {
       meal_type: "lunch",
