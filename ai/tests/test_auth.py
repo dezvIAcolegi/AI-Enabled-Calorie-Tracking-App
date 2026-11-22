@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from app import auth
 from app.config import Settings
 from app.main import app
+from app.nutrition import router as nutrition_router
 
 URL = "https://test-ref.supabase.co"
 ISSUER = URL + "/auth/v1"
@@ -35,6 +36,10 @@ ROUTES = [
 ]
 
 
+async def _no_foods(q, token):
+    return []
+
+
 def make_token(key=KEY, alg="ES256", kid=KID, **overrides) -> str:
     claims = {
         "sub": "user-1",
@@ -56,6 +61,9 @@ def client(monkeypatch):
     monkeypatch.setattr(keys, "fetch_data", lambda: {"keys": [jwk]})
     monkeypatch.setattr(auth, "jwks_client", lambda url: keys)
     monkeypatch.setattr(auth, "get_settings", lambda: Settings(supabase_url=URL))
+    monkeypatch.setattr(
+        nutrition_router, "_search", _no_foods
+    )  # foods DB is tested in tests/nutrition
     return TestClient(app)
 
 
