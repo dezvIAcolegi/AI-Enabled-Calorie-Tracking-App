@@ -12,6 +12,7 @@ from PIL import Image
 from app.config import Settings
 from app.label import reader
 from app.label.reader import GeminiBlock, GeminiLabel, prepare_image, to_result
+from app.label.reader import consume_scan as _real_consume
 
 FIXTURE = json.loads(
     (
@@ -186,8 +187,13 @@ def gemini(monkeypatch):
     async def no_sleep(_):
         pass
 
+    async def scan_ok(token):
+        install.scans.append(token)
+
+    install.scans = []
     monkeypatch.setattr(reader.asyncio, "sleep", no_sleep)
     monkeypatch.setattr(reader, "_cache", {})
+    monkeypatch.setattr(reader, "consume_scan", scan_ok)
     return install
 
 
@@ -254,6 +260,7 @@ def test_route_caches_same_photo(authed_client, gemini):
     assert post(authed_client, photo).status_code == 200
     assert post(authed_client, photo).status_code == 200
     assert len(fake.calls) == 1
+    assert gemini.scans == ["test-token"]  # the cached repeat doesn't count a scan
 
 
 @pytest.mark.parametrize(
@@ -269,7 +276,49 @@ def test_route_rejects_bad_upload(authed_client, gemini, data, ctype, status):
     fake = gemini()
     assert post(authed_client, data, ctype).status_code == status
     assert fake.calls == []  # never reaches Gemini
+    assert gemini.scans == []  # and doesn't count a scan
 
 
 def test_route_requires_image(authed_client):
     assert authed_client.post("/label/read").status_code == 422
+
+
+# ── daily scan cap ──────────────────────────────────────────────────────────
+
+
+class FakeSupabase:
+    def __init__(self, reply):
+        self.reply, self.calls = reply, []
+
+    async def __call__(self, method, path, token, **kwargs):
+        self.calls.append((method, path, token))
+        return self.reply
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("allowed", [True, False])
+async def test_consume_scan(monkeypatch, allowed):
+    fake = FakeSupabase({"allowed": allowed, "used": 30, "limit": 30})
+    monkeypatch.setattr(reader, "supabase_request", fake)
+    if allowed:
+        await reader.consume_scan("user-jwt")
+    else:
+        with pytest.raises(HTTPException) as e:
+            await reader.consume_scan("user-jwt")
+        assert (e.value.status_code, e.value.detail) == (429, "daily_scan_cap")
+    assert fake.calls == [("POST", "/rest/v1/rpc/consume_scan", "user-jwt")]
+
+
+def test_route_cap_reached_skips_gemini(authed_client, gemini, monkeypatch):
+    fake = gemini(GOOD_JSON)
+    monkeypatch.setattr(reader, "supabase_request", FakeSupabase({"allowed": False}))
+    monkeypatch.setattr(reader, "consume_scan", _real_consume)  # undo the fixture stub
+    r = post(authed_client)
+    assert (r.status_code, r.json()["detail"]) == (429, "daily_scan_cap")
+    assert fake.calls == []
+
+
+def test_gemini_quota_detail(authed_client, gemini):
+    gemini(errors.ClientError(429, {"error": {"code": 429}}))
+    r = post(authed_client)
+    assert (r.status_code, r.json()["detail"]) == (429, "model_quota")

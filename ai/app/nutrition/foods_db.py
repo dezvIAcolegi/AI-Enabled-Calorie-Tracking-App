@@ -12,6 +12,7 @@ Errors surface as HTTPException (401 if Supabase rejects the token, 502 otherwis
 """
 
 import time
+from typing import Any
 
 import httpx
 from fastapi import HTTPException
@@ -38,7 +39,8 @@ def _to_candidate(row: dict) -> Candidate:
     )
 
 
-async def _request(method: str, path: str, token: str, **kwargs) -> list[dict]:
+async def supabase_request(method: str, path: str, token: str, **kwargs) -> Any:
+    """PostgREST call as the caller (their token + publishable key). Shared with label/ for consume_scan."""
     s = get_settings()
     if not (s.supabase_url and s.supabase_anon_key):
         raise HTTPException(status_code=502, detail="foods database not configured")
@@ -63,7 +65,7 @@ async def search_foods(query: str, token: str, limit: int = 10) -> list[Candidat
     hit = _cache.get(key)
     if hit and time.monotonic() - hit[0] < CACHE_TTL:
         return hit[1]
-    rows = await _request(
+    rows = await supabase_request(
         "POST",
         "/rest/v1/rpc/search_foods",
         token,
@@ -78,7 +80,7 @@ async def search_foods(query: str, token: str, limit: int = 10) -> list[Candidat
 
 
 async def get_food(food_id: str, token: str) -> Candidate | None:
-    rows = await _request(
+    rows = await supabase_request(
         "GET",
         "/rest/v1/foods",
         token,
