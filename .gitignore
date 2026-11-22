@@ -12,3 +12,4 @@ graphify-out/
 .ruff_cache/
 .claude/worktrees/
 *.graphify-bak
+.board/

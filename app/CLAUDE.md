@@ -18,6 +18,17 @@ Screens: login, today's log (macro totals vs targets), meal scan (photo or text)
 
 `/supabase`, `/ai`, `/eval`, `/contracts`.
 
+## Board
+
+You post as `@MIHAI_GITHUB` (app). Rules are in the root `CLAUDE.md`.
+
+- **Watch for:** endpoints going from stub to live (Sebi, Lucas), changes to tables, RLS or `barcode-lookup` (Kevin), new AI service URLs, and contract `PROPOSAL`s.
+- **`NEED` to:**
+  - Kevin for tables, columns, RLS, storage or Edge Functions.
+  - Sebi for `/meal/*` behaviour.
+  - Lucas for `/label/read`, `/foods/search`, `macros.ts`, the AI service URL or auth.
+- **`DONE` when:** a screen works end to end, so the owner of the backend or AI part can test their piece in the app. Tag that owner.
+
 ## Commands
 
 Add run, test and lint commands here once the Expo project is scaffolded.

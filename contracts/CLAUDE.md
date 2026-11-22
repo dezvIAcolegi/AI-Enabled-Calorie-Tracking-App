@@ -1,6 +1,6 @@
 # /contracts
 
-The shared source of truth for all four roles. **Read-only for every Claude session.** If a change is needed, write a proposal for the user to raise with the team. Changes merge only through a PR approved by all four.
+The shared source of truth for all four roles. **Read-only for every Claude session.** If a change is needed, write a proposal for the user and post it on the board as a `PROPOSAL` tagging `@team` (see root `CLAUDE.md`). Changes merge only through a PR approved by all four.
 
 | Path | Contents | Owner |
 |---|---|---|

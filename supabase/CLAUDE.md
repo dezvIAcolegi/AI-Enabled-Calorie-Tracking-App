@@ -18,6 +18,16 @@ Supabase in the **EU region**: Postgres, Auth, Storage, RLS, Edge Functions. Kev
 
 `/app`, `/ai`, `/eval`, and `/contracts` other than `contracts/db` (still via an all-four PR).
 
+## Board
+
+You post as `@Kevin-ai-jpg` (backend). Rules are in the root `CLAUDE.md`.
+
+- **Watch for:** `NEED`s for tables, columns, RLS, storage buckets, rate limits or `barcode-lookup`, and `PROPOSAL`s that touch `contracts/db`.
+- **`DONE` when:**
+  - A migration is applied to **shared**: name the tables and columns, tag `@team`.
+  - `barcode-lookup` is deployed, or seed data changes.
+- **Board upkeep:** Kevin owns repo tooling, so keep `scripts/board.conf` (issue number, handles) current.
+
 ## Working without Docker
 
 Nothing runs locally. There are two hosted projects: **dev** (Kevin's sandbox: push and test here first, reset freely) and **shared** (the team's: only merged changes). Never use `supabase start`, `functions serve`, `db diff`, `db dump`, `test db` or `--local`; they need Docker. Use the dashboard SQL Editor, Advisors and Logs for one-off checks.
