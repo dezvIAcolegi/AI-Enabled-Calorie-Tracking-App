@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
+from app.auth import AccessToken
 from app.label import reader
 from app.label.schemas import LabelResult
 
@@ -15,7 +16,8 @@ async def read_label(
     image: Annotated[
         UploadFile, File(description="Nutrition label photo, JPEG or PNG")
     ],
+    token: AccessToken,
 ) -> LabelResult:
     if not (image.content_type or "").startswith("image/"):
         raise HTTPException(status_code=415, detail="image must be an image file")
-    return await reader.read_label(await image.read(reader.MAX_UPLOAD_BYTES + 1))
+    return await reader.read_label(await image.read(reader.MAX_UPLOAD_BYTES + 1), token)

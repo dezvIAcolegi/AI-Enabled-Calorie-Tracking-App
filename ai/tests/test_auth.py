@@ -42,7 +42,7 @@ async def _no_foods(q, token):
     return []
 
 
-async def _fixture_label(data):
+async def _fixture_label(data, token):
     return LabelResult(
         per_100g=None, per_serving=None, serving_grams=None, flagged=["per_100g"]
     )

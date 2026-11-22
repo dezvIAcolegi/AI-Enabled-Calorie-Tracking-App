@@ -54,15 +54,17 @@ def test_missing_serving_size():
 
 def test_per_serving_single_mismatch():
     # 20 g still passes 4/4/9 for the serving, but 65 * 25 / 100 = 16.25.
-    assert check_label(PER_100G, {**PER_SERVING, "carbs": 20}, 25) == ["per_serving.carbs"]
+    assert check_label(PER_100G, {**PER_SERVING, "carbs": 20}, 25) == [
+        "per_serving.carbs"
+    ]
 
 
 def test_per_serving_all_off_flags_serving_grams():
     # Serving really 25 g, misread as 50 g.
     flags = check_label(PER_100G, PER_SERVING, 50)
-    assert flags == [f"per_serving.{k}" for k in ("kcal", "protein", "carbs", "fat")] + [
-        "serving_grams"
-    ]
+    assert flags == [
+        f"per_serving.{k}" for k in ("kcal", "protein", "carbs", "fat")
+    ] + ["serving_grams"]
 
 
 def test_missing_values_flagged_not_crashed():

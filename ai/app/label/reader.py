@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from app.config import get_settings
 from app.label.checks import NUTRIENTS, check_label, energy_kcal
 from app.label.schemas import LabelResult
+from app.nutrition.foods_db import supabase_request
 
 MAX_SIDE = 1600  # labels have small print; meal photos use 1024
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -138,9 +139,7 @@ async def ask_gemini(jpeg: bytes) -> GeminiLabel:
             await asyncio.sleep(2 * (attempt + 1))
         except errors.ClientError as e:
             if e.code == 429:
-                raise HTTPException(
-                    status_code=429, detail="label reader quota reached"
-                ) from e
+                raise HTTPException(status_code=429, detail="model_quota") from e
             raise HTTPException(status_code=502, detail="label reader error") from e
         except ValueError as e:  # malformed JSON from the model
             raise HTTPException(
@@ -154,13 +153,22 @@ _cache: dict[str, LabelResult] = {}
 CACHE_MAX = 256
 
 
-async def read_label(data: bytes) -> LabelResult:
+async def consume_scan(token: str) -> None:
+    """Count one scan against the user's daily cap (Supabase consume_scan); 429 when it's used up."""
+    usage = await supabase_request("POST", "/rest/v1/rpc/consume_scan", token, json={})
+    if not usage.get("allowed"):
+        raise HTTPException(status_code=429, detail="daily_scan_cap")
+
+
+async def read_label(data: bytes, token: str) -> LabelResult:
+    """Bad uploads and cached photos don't count against the daily cap."""
     if len(data) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="image larger than 10 MB")
     key = hashlib.sha256(data).hexdigest()
     if key in _cache:
         return _cache[key]
     jpeg = await asyncio.to_thread(prepare_image, data)
+    await consume_scan(token)
     result = to_result(await ask_gemini(jpeg))
     if len(_cache) >= CACHE_MAX:
         _cache.pop(next(iter(_cache)))
