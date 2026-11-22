@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff"]
+dev = ["pytest", "ruff", "pyyaml"]  # pyyaml: scripts/check_openapi.py
 
 [build-system]
 requires = ["setuptools>=61"]
