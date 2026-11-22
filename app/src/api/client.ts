@@ -87,6 +87,13 @@ export async function aiRequest<T>(opts: RequestOptions): Promise<T> {
   return (await res.json()) as T;
 }
 
+/** 429 `detail` codes agreed on the board (Kevin/Lucas, openapi.yaml proposal). */
+const RATE_LIMIT_TEXT: Record<string, string> = {
+  daily_scan_cap:
+    "You've used all your AI scans for today. Barcodes, search and the library still work.",
+  model_quota: 'The AI is busy right now (shared free quota). Try again in a minute.',
+};
+
 async function errorFromResponse(res: Response): Promise<ApiError> {
   let detail = '';
   try {
@@ -97,7 +104,16 @@ async function errorFromResponse(res: Response): Promise<ApiError> {
   }
   if (res.status === 401) return new ApiError('unauthenticated', 'Please sign in again.', 401);
   if (res.status === 429)
-    return new ApiError('rate_limited', detail || "You've reached today's scan limit.", 429);
+    return new ApiError(
+      'rate_limited',
+      RATE_LIMIT_TEXT[detail] ?? RATE_LIMIT_TEXT.daily_scan_cap!,
+      429,
+    );
+  if (res.status === 413)
+    return new ApiError('bad_request', 'That photo is too large. Try again.', 413);
+  if (res.status === 415) return new ApiError('bad_request', 'That file is not a photo.', 415);
+  if (res.status === 502 || res.status === 503)
+    return new ApiError('server', 'The AI could not read this right now. Try again.', res.status);
   if (res.status >= 500)
     return new ApiError('server', 'The server had a problem. Try again.', res.status);
   return new ApiError('bad_request', detail || 'The request was rejected.', res.status);

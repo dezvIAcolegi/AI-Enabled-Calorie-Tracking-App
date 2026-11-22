@@ -22,6 +22,13 @@ function RootNavigator() {
         <Stack.Screen name="product/log" options={{ title: 'Log food' }} />
         <Stack.Screen name="library/add" options={{ headerShown: false }} />
         <Stack.Screen name="library/[id]" options={{ title: 'Edit product' }} />
+        <Stack.Screen
+          name="library/pick"
+          options={{ title: 'From your library', presentation: 'modal' }}
+        />
+        <Stack.Screen name="recipe/edit" options={{ title: 'Recipe' }} />
+        <Stack.Screen name="recipe/[id]" options={{ title: 'Recipe' }} />
+        <Stack.Screen name="history/[day]" options={{ title: 'Day' }} />
       </Stack.Protected>
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
