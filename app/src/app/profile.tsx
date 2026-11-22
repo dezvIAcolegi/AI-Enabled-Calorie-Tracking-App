@@ -11,6 +11,7 @@ import {
   suggestMacros,
   TARGET_LIMITS,
   updateProfile,
+  withdrawScanConsent,
   type Profile,
   type TargetKey,
 } from '@/data/profile';
@@ -90,7 +91,18 @@ export default function ProfileScreen() {
   const toggleConsent = async (on: boolean) => {
     setProfile({ ...profile, scan_consent: on });
     try {
-      await updateProfile({ scan_consent: on });
+      if (on) {
+        await updateProfile({ scan_consent: true });
+      } else {
+        // Backend #36: turns consent off and deletes every kept scan in one call.
+        const deleted = await withdrawScanConsent();
+        setMsg({
+          kind: 'warn',
+          text: deleted
+            ? `Consent withdrawn. ${deleted} kept scan${deleted === 1 ? '' : 's'} deleted.`
+            : 'Consent withdrawn.',
+        });
+      }
     } catch (e) {
       setProfile({ ...profile, scan_consent: !on });
       setMsg({ kind: 'error', text: e instanceof Error ? e.message : 'Could not change consent.' });
@@ -178,7 +190,7 @@ export default function ProfileScreen() {
           <Text style={{ color: t.text, fontSize: font.body }}>Help improve the AI</Text>
           <Text style={{ color: t.muted, fontSize: font.small }}>
             Keep the AI’s raw answer and your corrections for our accuracy tests. Off by default;
-            turning it off stops new ones being kept.
+            turning it off deletes everything kept so far.
           </Text>
         </View>
         <Switch
