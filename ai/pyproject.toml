@@ -10,6 +10,7 @@ dependencies = [
     "httpx",
     "pyjwt[crypto]",
     "google-genai",
+    "pillow",  # resize label photos before they go to Gemini
 ]
 
 [project.optional-dependencies]
