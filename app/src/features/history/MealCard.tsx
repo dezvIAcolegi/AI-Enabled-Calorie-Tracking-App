@@ -4,14 +4,28 @@ import { font, useTheme } from '@/components/theme';
 import { mealTotals, type MealRow } from '@/data/meals';
 import { fmtGrams } from '@/lib/format';
 
-export function MealCard({ meal, onLongPress }: { meal: MealRow; onLongPress?: () => void }) {
+export function MealCard({
+  meal,
+  onPress,
+  onLongPress,
+}: {
+  meal: MealRow;
+  onPress?: () => void;
+  onLongPress?: () => void;
+}) {
   const t = useTheme();
   const mt = mealTotals(meal);
   return (
     <Pressable
+      onPress={onPress}
       onLongPress={onLongPress}
-      disabled={!onLongPress}
-      accessibilityHint={onLongPress ? 'Long press to delete' : undefined}
+      disabled={!onLongPress && !onPress}
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityHint={
+        [onPress && 'Tap to edit', onLongPress && 'long press to delete']
+          .filter(Boolean)
+          .join(', ') || undefined
+      }
       style={[styles.card, { backgroundColor: t.card }]}
     >
       <View style={styles.head}>
