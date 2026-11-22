@@ -1,0 +1,23 @@
+# Render Blueprint for the AI service. In Render: New > Blueprint, pick this repo,
+# set "Blueprint path" to ai/render.yaml. Secrets (sync: false) are typed into the
+# Render dashboard when the Blueprint is created; they never go in the repo.
+services:
+  - type: web
+    name: calorie-ai
+    runtime: python
+    plan: free
+    region: frankfurt
+    rootDir: ai # the whole repo is cloned, so ../contracts/fixtures still resolves
+    buildCommand: pip install .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true # redeploys on every merge to main that touches ai/
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: SUPABASE_URL
+        value: https://xbowjaompnlqjvoimxpa.supabase.co # shared project; not secret
+      - key: GEMINI_API_KEY
+        sync: false # the deploy's own Google project key
+      - key: SUPABASE_ANON_KEY
+        sync: false # shared project's publishable key
