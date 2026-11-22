@@ -162,6 +162,14 @@ for (let page = 1;; page++) {
   if (data.users.length < 200) break;
 }
 
+// Sign-up is allowlisted (migration 20261122140000). The demo address stays
+// on the list so the account can be recreated on every run.
+const allow = await admin.from("signup_allowlist").upsert({
+  email,
+  note: "demo account (supabase/seed/demo-user.ts)",
+});
+if (allow.error) throw allow.error;
+
 const created = await admin.auth.admin.createUser({
   email,
   password,

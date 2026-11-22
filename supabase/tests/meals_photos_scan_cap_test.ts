@@ -19,11 +19,15 @@ async function makeUser(
 ): Promise<{ id: string; db: SupabaseClient }> {
   const email = `meals-${label}-${crypto.randomUUID()}@example.com`;
   const password = crypto.randomUUID();
+  // Sign-up is allowlisted (migration 20261122140000); allow just this address.
+  const allow = await admin.from("signup_allowlist").insert({ email });
+  if (allow.error) throw allow.error;
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
   });
+  await admin.from("signup_allowlist").delete().eq("email", email);
   if (error) throw error;
   const db = createClient(url, anonKey, { auth: { persistSession: false } });
   const { error: signInError } = await db.auth.signInWithPassword({

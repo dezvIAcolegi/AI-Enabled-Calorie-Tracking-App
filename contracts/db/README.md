@@ -13,6 +13,7 @@ Every `.sql` file here is an identical copy of a migration in `supabase/migratio
 | `recipes`, `recipe_items` | Owner only | A recipe and its foods with grams |
 | `scans` | Owner only | Raw AI output + the user's corrected version. Insert only works when `profiles.scan_consent` is true |
 | `profiles` | Owner only | Daily targets, `timezone`, `scan_consent`. Created automatically at sign-up |
+| `signup_allowlist` | Service role only | Emails allowed to create an account |
 | `scan_usage` | Owner reads; only `consume_scan()` writes | AI scans used per user per day (`day` in the user's timezone) |
 
 Every user table has `user_id`, which defaults to the caller (`auth.uid()`), so inserts from the app can leave it out. Deleting a user deletes all their rows.
@@ -67,6 +68,12 @@ Each user gets **30 AI scans per day** (photo, text or label), counted in their 
 - **App:** `supabase.rpc("scan_quota")` returns the same shape without counting, for "26 scans left today".
 
 Users can read `scan_usage` but never write it. The cap is `daily_scan_limit()`; change it with a new migration.
+
+## Who can sign up
+
+Only emails on the **sign-up allowlist** can create an account (the free Gemini tier can't serve users in the EEA outside the team). Anyone else gets an error from `signUp` ("Database error saving new user"); the app should show "This app is invite-only for now". Existing accounts are unaffected.
+
+Kevin adds team members with `supabase/scripts/allow-signup.ts add <email>` (service key; emails never go in the repo). The demo seed and the dev tests add their own addresses.
 
 ## Rules
 

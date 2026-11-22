@@ -18,11 +18,15 @@ async function makeUser(
 ): Promise<{ id: string; db: SupabaseClient }> {
   const email = `smoke-${label}-${crypto.randomUUID()}@example.com`;
   const password = crypto.randomUUID();
+  // Sign-up is allowlisted (migration 20261122140000); allow just this address.
+  const allow = await admin.from("signup_allowlist").insert({ email });
+  if (allow.error) throw allow.error;
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
   });
+  await admin.from("signup_allowlist").delete().eq("email", email);
   if (error) throw error;
   const db = createClient(url, anonKey, { auth: { persistSession: false } });
   const { error: signInError } = await db.auth.signInWithPassword({
@@ -44,6 +48,18 @@ Deno.test("schema smoke test on dev", async (t) => {
       async () => {
         const own = await alice.db.from("profiles").select("id");
         assertEquals(own.data?.map((p) => p.id), [alice.id]);
+      },
+    );
+
+    await t.step(
+      "sign-up is refused for emails not on the allowlist",
+      async () => {
+        const { data, error } = await anon.auth.signUp({
+          email: `stranger-${crypto.randomUUID()}@example.com`,
+          password: crypto.randomUUID(),
+        });
+        assert(error, "a stranger must not be able to sign up");
+        assertEquals(data.user, null);
       },
     );
 
