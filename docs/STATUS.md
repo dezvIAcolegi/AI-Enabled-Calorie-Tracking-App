@@ -7,7 +7,7 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 
 - [x] Monorepo with `/app`, `/supabase`, `/ai`, `/eval`, `/contracts`, `/docs`
 - [x] Root `CLAUDE.md` and one per folder
-- [ ] DB schema, AI output JSON schemas and `openapi.yaml` agreed and merged
+- [x] DB schema, AI output JSON schemas and `openapi.yaml` agreed and merged (`openapi.yaml` + `ts/api.ts` in #23)
 - [ ] FastAPI stubs returning fixed JSON deployed; DB seed data
 - [ ] CI and branch protection on (CI runs on every PR; `main` is **not** protected yet, Kevin to enable a required `ci-ok` check)
 - [ ] Everyone runs the app on their phone against the stubs
@@ -23,13 +23,20 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 
 - [ ] A1–A5: dates and what each asks for, to pin the phases
 - [ ] iOS: who has an iPhone to test with Expo Go?
-- [ ] FastAPI hosting: Render free tier, Railway, or a university server?
+- [x] FastAPI hosting: Render free tier, Frankfurt (agreed 4/4 on the board). Deploy pending: own Gemini key for the service, and sign-up restricted to team/demo accounts first
 - [ ] Romanian dishes not in FDC: closest generic match or a small custom food table? (after first meal-photo tests)
 - [x] Who creates the GitHub repo and owns the Supabase project? Kevin (projects `calorie-dev`, `calorie-shared`, eu-west-1)
 - [ ] One shared Gemini key on the backend, or one per developer for testing?
 - [ ] Day and time of the weekly integration call
 
 ## Log
+
+- 2026-11-22 · label-ai · **blocked:** deploy waits for a Render account (Lucas), a separate Gemini key for the service, and sign-up restricted (Kevin). `/foods/search`, the auth check and the scan cap are untested against real Supabase until it's restored; `ai/.env` still needs the shared project's `SUPABASE_ANON_KEY`.
+- 2026-11-22 · label-ai · contract change (#23): `contracts/openapi.yaml` + generated `contracts/ts/api.ts`; `/label/read` uses a label-only `LabelMacros` with nullable values (unreadable → `null` + `flagged`); 401/413/415/429/502/503 documented as `{ detail }`, 429 is `daily_scan_cap` or `model_quota`.
+- 2026-11-22 · label-ai · landed: `/label/read` calls `consume_scan` before Gemini (#19); `ai/scripts/check_openapi.py` for CI (#14); `test_auth` fakes the meal pipeline (#27).
+- 2026-11-22 · label-ai · landed (#11): real `POST /label/read` (Gemini Flash-lite, EXIF rotate + resize to 1600 px, kJ→kcal, per-100 g derived from per-serving labels, `checks.py` flags, cached by photo hash).
+- 2026-11-22 · label-ai · landed (#10): real `GET /foods/search` on Supabase `search_foods` with the caller's token (FDC API dropped); in-process `search_foods` / `get_food` for `meal/`; 5-min cache.
+- 2026-11-22 · label-ai · landed (#7): Supabase access-token check (JWKS, ES256/RS256) on every AI route except `/health`; meal router mounted.
 
 - 2026-11-22 · app · **blocked:** live end-to-end test needs Supabase restored (Kevin), the AI service URL (Lucas, Render) and real `/meal/*` routes (Sebi). Until then the app runs in device-only mock mode (empty `app/.env`).
 - 2026-11-22 · app · landed (#22): History (weekly macro chart, 28 days, day view), Recipes (build from library/search, log a portion as scaled ingredients), readable 429 `daily_scan_cap`/`model_quota` and 413/415/502/503 messages.
