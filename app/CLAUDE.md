@@ -48,7 +48,7 @@ Copy `.env.example` to `.env`. With `EXPO_PUBLIC_AI_URL` empty the app answers f
 
 - `src/app/`: Expo Router routes. `(auth)/sign-in`; `(tabs)/` Today, Scan, Library, Recipes, History; `profile`; `capture?mode=meal|label|barcode`; `meal/edit` (ingredient editor), `meal/search`, `meal/text`; `label/review`; `product/barcode`, `product/log`; `library/add|pick|[id]`; `recipe/edit|[id]`; `history/[day]`.
 - `src/api/`: one typed function per AI endpoint (`index.ts`), fetch + token + timeouts + error kinds (`client.ts`), fixture mocks (`mocks.ts`), `warmUp()` for the sleeping free host.
-- `src/api/types.ts` + `contract-check.ts`: **temporary** mirror of `contracts/ai/*.schema.json` until `contracts/ts/api.ts` exists; delete both then. `contract-check.ts` fails `tsc` if they drift from `macros.ts`.
+- `src/api/types.ts`: aliases of the generated `contracts/ts/api.ts` (`components['schemas']`); never hand-write a contract shape. `contract-check.ts` fails `tsc` if the generated `Macros`/`IngredientItem` stop fitting `macros.ts`.
 - `src/data/`: Supabase access (meals via `save_meal`, foods/products, barcode-lookup, recipes, profile, delete-account). With no Supabase env, each falls back to a device-only store (`local*.ts`) so every flow can be demoed.
 - `src/features/`: pure logic with tests (`meal/editor.ts`, `meal/portions.ts`, `label/form.ts`, `history/days.ts`) plus small cross-screen stores (`draft.ts`, `pick.ts`, `product/active.ts`).
 - `metro.config.js` watches `../contracts` so `@contracts/macros` and the fixtures bundle.
