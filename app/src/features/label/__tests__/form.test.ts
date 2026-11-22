@@ -77,3 +77,26 @@ it('warns when calories do not add up (4/4/9)', () => {
   const v = validate(setField({ ...formFromLabel(clean), name: 'x' }, 'per_100g.kcal', '100'));
   expect(v).toMatchObject({ ok: true, warnings: [expect.stringMatching(/don't match/)] });
 });
+
+it('treats a null nutrient (LabelMacros) as unknown and fills the rest', () => {
+  const r = {
+    per_100g: { kcal: 389, protein: 13, carbs: 66, fat: null },
+    per_serving: null,
+    serving_grams: 40,
+    flagged: ['per_100g.fat'],
+  };
+  const f = formFromLabel(r);
+  expect(f.values['per_100g.kcal']).toBe('389');
+  expect(f.values['per_100g.fat']).toBe('');
+  expect([...f.flagged]).toEqual(['per_100g.fat']);
+});
+
+it('fills a missing per-100 g value from per serving', () => {
+  const r = {
+    per_100g: { kcal: 389, protein: null, carbs: 66, fat: 7 },
+    per_serving: { kcal: 156, protein: 5.2, carbs: null, fat: null },
+    serving_grams: 40,
+    flagged: [],
+  };
+  expect(formFromLabel(r).values['per_100g.protein']).toBe('13');
+});
