@@ -2,6 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { hasSupabase } from '@/lib/env';
+import type { TablesUpdate } from '@contracts/database';
 import { supabase } from '@/lib/supabase';
 
 export type Profile = {
@@ -49,8 +50,22 @@ export async function getProfile(): Promise<Profile> {
   };
 }
 
+/**
+ * Turn consent off AND delete every kept scan, in one call (backend #36). Returns how many
+ * scans were deleted. Turning consent on still goes through updateProfile.
+ */
+export async function withdrawScanConsent(): Promise<number> {
+  if (!hasSupabase) {
+    await updateProfile({ scan_consent: false });
+    return 0;
+  }
+  const { data, error } = await supabase.rpc('withdraw_scan_consent');
+  if (error) throw new Error(error.message);
+  return data ?? 0;
+}
+
 export async function updateProfile(patch: Partial<Profile>): Promise<void> {
-  const row: Record<string, unknown> = { ...patch };
+  const row: TablesUpdate<'profiles'> = { ...patch };
   // scan_consent_at records when consent was given (privacy: evaluation data only with consent).
   if (patch.scan_consent !== undefined)
     row.scan_consent_at = patch.scan_consent ? new Date().toISOString() : null;

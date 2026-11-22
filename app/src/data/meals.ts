@@ -5,6 +5,7 @@ import { macrosFor, type Nutrients } from '@contracts/macros';
 import type { IngredientItem, MealResponse } from '@/api';
 import type { MealSource } from '@/features/meal/draft';
 import { hasSupabase } from '@/lib/env';
+import type { Json } from '@contracts/database';
 import { supabase } from '@/lib/supabase';
 
 import { uuid } from './foods';
@@ -93,8 +94,8 @@ export async function recordScan(opts: {
     if (!p?.scan_consent) return;
     await supabase.from('scans').insert({
       kind: opts.kind,
-      raw_output: opts.raw,
-      corrected: opts.corrected,
+      raw_output: opts.raw as Json,
+      corrected: opts.corrected as Json,
       meal_id: opts.mealId ?? null,
     });
   } catch {

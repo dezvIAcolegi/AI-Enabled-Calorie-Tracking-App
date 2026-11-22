@@ -1,13 +1,16 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@contracts/database';
 import { AppState } from 'react-native';
 
 import { env, hasSupabase } from './env';
 
 // Placeholder URL keeps createClient from throwing when .env is empty; calls then fail
 // with a network error that the UI shows, instead of crashing at import time.
-export const supabase = createClient(
+// Typed with the generated schema (contracts/ts/database.ts, #38): table and RPC calls are
+// checked against the real database.
+export const supabase = createClient<Database>(
   hasSupabase ? env.supabaseUrl : 'http://localhost:54321',
   hasSupabase ? env.supabaseAnonKey : 'missing-anon-key',
   {

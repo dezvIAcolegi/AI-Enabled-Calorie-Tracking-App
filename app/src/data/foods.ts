@@ -3,6 +3,7 @@ import { FunctionsHttpError } from '@supabase/supabase-js';
 
 import type { Candidate, Macros } from '@/api';
 import { hasSupabase } from '@/lib/env';
+import type { TablesUpdate } from '@contracts/database';
 import { supabase } from '@/lib/supabase';
 
 import { localProducts, mockBarcode } from './localFoods';
@@ -53,6 +54,7 @@ export type BarcodeError =
   | 'not_found'
   | 'no_usable_nutrition'
   | 'off_unavailable'
+  | 'barcode_limit'
   | 'db_error'
   | 'network';
 
@@ -73,7 +75,8 @@ export async function lookupBarcode(barcode: string): Promise<BarcodeResult> {
       return {
         ok: false,
         error: body.error ?? 'db_error',
-        message: body.message ?? 'Lookup failed.',
+        message:
+          body.error === 'barcode_limit' ? BARCODE_LIMIT_TEXT : (body.message ?? 'Lookup failed.'),
       };
     } catch {
       return { ok: false, error: 'db_error', message: 'Lookup failed.' };
@@ -87,7 +90,12 @@ export async function lookupBarcode(barcode: string): Promise<BarcodeResult> {
 }
 
 /** Lookup failures where the right next step is photographing the label. */
-export const offerLabel = (e: BarcodeError) => e === 'not_found' || e === 'no_usable_nutrition';
+export const offerLabel = (e: BarcodeError) =>
+  e === 'not_found' || e === 'no_usable_nutrition' || e === 'barcode_limit';
+
+/** barcode-lookup's 429 (100 new products per user per day, backend #36), in plain words. */
+export const BARCODE_LIMIT_TEXT =
+  "You've looked up 100 new products today. Products you've scanned before still work; try tomorrow or photograph the label.";
 
 // ─── user's own foods (label / manual) ───────────────────────────────────────
 
@@ -132,7 +140,7 @@ export async function createFood(f: NewFood): Promise<FoodRow> {
 }
 
 export async function updateFood(id: string, f: Partial<NewFood>): Promise<void> {
-  const patch: Record<string, unknown> = {};
+  const patch: TablesUpdate<'foods'> = {};
   if (f.name !== undefined) patch.name = f.name.trim();
   if (f.brand !== undefined) patch.brand = f.brand.trim() || null;
   if (f.per_100g) Object.assign(patch, f.per_100g);
