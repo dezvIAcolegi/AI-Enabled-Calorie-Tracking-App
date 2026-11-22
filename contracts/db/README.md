@@ -13,6 +13,7 @@ Every `.sql` file here is an identical copy of a migration in `supabase/migratio
 | `recipes`, `recipe_items` | Owner only | A recipe and its foods with grams |
 | `scans` | Owner only | Raw AI output + the user's corrected version. Insert only works when `profiles.scan_consent` is true |
 | `profiles` | Owner only | Daily targets, `timezone`, `scan_consent`. Created automatically at sign-up |
+| `scan_usage` | Owner reads; only `consume_scan()` writes | AI scans used per user per day (`day` in the user's timezone) |
 
 Every user table has `user_id`, which defaults to the caller (`auth.uid()`), so inserts from the app can leave it out. Deleting a user deletes all their rows.
 
@@ -35,8 +36,41 @@ The contract prefixes, with `origin` recording where a food came from:
 
 `search_foods(query text, max_results int default 20)` returns `foods` rows. It ignores case and diacritics ("albus" finds *Albuș de ou*), ranks the user's own foods first and generic foods above packaged ones, and only returns rows the caller may see. Call it with `supabase.rpc('search_foods', { query: 'lapte', max_results: 10 })` or `POST /rest/v1/rpc/search_foods`.
 
+## Meal photos (Storage)
+
+Private bucket `meal-photos`. Upload to `<user id>/<uuid>.jpg`; users can only read and write their own folder. JPEG/PNG/WebP/HEIC, max 5 MB, but resize to ~1024 px before upload. Store the path (not a URL) in `meals.photo_path`, which must start with the owner's id. Show it with `createSignedUrl(path, 3600)`.
+
+```ts
+const path = `${user.id}/${crypto.randomUUID()}.jpg`;
+await supabase.storage.from("meal-photos").upload(path, jpegBytes, { contentType: "image/jpeg" });
+```
+
+## Saving a meal
+
+`save_meal(meal jsonb, items jsonb) → uuid` writes a meal and all its items in one transaction (all or nothing). Pass `meal.id` to edit an existing meal: its fields are updated and its items replaced.
+
+```ts
+import { macrosFor } from "../contracts/ts/macros";
+const { data: mealId, error } = await supabase.rpc("save_meal", {
+  meal: { meal_type: "lunch", source: "photo", photo_path: path },
+  items: items.map((it) => ({ ...it, macros: macrosFor(it.per_100g, it.grams) })),
+});
+```
+
+Each item is an ingredient item (`name`, `food_id`, `grams`, `confidence`, `per_100g`) plus `macros` from `macrosFor`. Extra fields such as `candidates` are ignored. A `food_id` the user can't see is stored as null; the snapshot keeps the name and values. The database rejects totals that don't match `per_100g × grams / 100` (2-decimal rounding allowed), so always use `macrosFor`. Max 50 items.
+
+## Daily scan cap
+
+Each user gets **30 AI scans per day** (photo, text or label), counted in their profile timezone. This keeps the team inside the Gemini free tier.
+
+- **AI service:** before every Gemini call, `POST /rest/v1/rpc/consume_scan` with the user's token (no body). It returns `{ "allowed": true, "used": 4, "limit": 30 }` and counts the scan. When `allowed` is false, skip Gemini and answer **429**. Cached results don't need to consume a scan.
+- **App:** `supabase.rpc("scan_quota")` returns the same shape without counting, for "26 scans left today".
+
+Users can read `scan_usage` but never write it. The cap is `daily_scan_limit()`; change it with a new migration.
+
 ## Rules
 
 - Change the schema only with a new migration, then copy it here (`check-contracts-sync.ts --write`). Never edit an applied migration.
 - Shared catalogue rows are written only server-side (catalogue import, `barcode-lookup`). Users can only create `label`/`user` foods they own.
+- `products`, `recipe_items` and `meal_items` can only reference foods the user can see (shared or their own).
 - Attribution: Open Food Facts data is ODbL ("Data from Open Food Facts"), CIQUAL is Licence Ouverte (ANSES), USDA is public domain.
