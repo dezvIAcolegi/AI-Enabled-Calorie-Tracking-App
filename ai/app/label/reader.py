@@ -90,14 +90,10 @@ def to_result(label: GeminiLabel) -> LabelResult:
 
     flagged = check_label(per_100g, per_serving, grams)
 
-    # The contract has no per-field null, so an unreadable value goes out as 0 and stays in
-    # `flagged`; the app asks the user to fill in every flagged field.
-    def macros(block: dict | None) -> dict | None:
-        return None if block is None else {k: block[k] or 0.0 for k in NUTRIENTS}
-
+    # An unreadable value stays null and is listed in `flagged`; the app asks the user for it.
     return LabelResult(
-        per_100g=macros(per_100g),
-        per_serving=macros(per_serving),
+        per_100g=per_100g,
+        per_serving=per_serving,
         serving_grams=grams,
         flagged=flagged,
     )

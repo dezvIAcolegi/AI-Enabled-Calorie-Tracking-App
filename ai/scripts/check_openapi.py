@@ -2,6 +2,7 @@
 
     python scripts/check_openapi.py          # exit 1 and show the diff when they differ
     python scripts/check_openapi.py --write  # regenerate contracts/openapi.yaml (a /contracts PR)
+    npx -y openapi-typescript@7.4.4 ../contracts/openapi.yaml -o ../contracts/ts/api.ts  # then api.ts
 
 Compares parsed documents, so YAML formatting and key order don't matter.
 """

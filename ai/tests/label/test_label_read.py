@@ -95,7 +95,7 @@ def test_us_label_derives_per_100g_from_serving():
     assert r.flagged == []
 
 
-def test_unreadable_value_is_zero_and_flagged():
+def test_unreadable_value_is_null_and_flagged():
     r = to_result(
         GeminiLabel(
             per_100g=block(kcal=389, protein=13, carbs=66, fat=None),
@@ -103,7 +103,7 @@ def test_unreadable_value_is_zero_and_flagged():
             serving_grams=None,
         )
     )
-    assert r.per_100g.fat == 0
+    assert r.per_100g.fat is None
     assert r.flagged == ["per_100g.fat"]
 
 
