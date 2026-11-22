@@ -23,7 +23,7 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 
 - [ ] A1–A5: dates and what each asks for, to pin the phases
 - [ ] iOS: who has an iPhone to test with Expo Go?
-- [x] FastAPI hosting: Render free tier, Frankfurt (agreed 4/4 on the board). Deploy pending: own Gemini key for the service, and sign-up restricted to team/demo accounts first
+- [x] FastAPI hosting: Render free tier, Frankfurt (agreed 4/4 on the board). Live at https://calorie-ai-t1r0.onrender.com (`ai/render.yaml`, #34), with its own Gemini key in a separate Google project
 - [ ] Romanian dishes not in FDC: closest generic match or a small custom food table? (after first meal-photo tests)
 - [x] Who creates the GitHub repo and owns the Supabase project? Kevin (projects `calorie-dev`, `calorie-shared`, eu-west-1)
 - [ ] One shared Gemini key on the backend, or one per developer for testing?
@@ -31,7 +31,7 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 
 ## Log
 
-- 2026-11-22 · label-ai · **blocked:** deploy waits for a Render account (Lucas), a separate Gemini key for the service, and sign-up restricted (Kevin). `/foods/search`, the auth check and the scan cap are untested against real Supabase until it's restored; `ai/.env` still needs the shared project's `SUPABASE_ANON_KEY`.
+- 2026-11-22 · label-ai · landed: AI service deployed on Render (#34), auto-redeploys on merges touching `ai/`. Live end-to-end test with the demo account passes: ES256 token accepted, `/foods/search` returns catalogue foods ("albus de ou" → *Albuș de ou*), `/label/read` reads a Romanian label exactly in 3.7 s (cached repeat 0.2 s), `scan_quota` 0 → 1 with the repeat not counted. Next: label test set in `/eval/label`.
 - 2026-11-22 · label-ai · contract change (#23): `contracts/openapi.yaml` + generated `contracts/ts/api.ts`; `/label/read` uses a label-only `LabelMacros` with nullable values (unreadable → `null` + `flagged`); 401/413/415/429/502/503 documented as `{ detail }`, 429 is `daily_scan_cap` or `model_quota`.
 - 2026-11-22 · label-ai · landed: `/label/read` calls `consume_scan` before Gemini (#19); `ai/scripts/check_openapi.py` for CI (#14); `test_auth` fakes the meal pipeline (#27).
 - 2026-11-22 · label-ai · landed (#11): real `POST /label/read` (Gemini Flash-lite, EXIF rotate + resize to 1600 px, kJ→kcal, per-100 g derived from per-serving labels, `checks.py` flags, cached by photo hash).
