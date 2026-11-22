@@ -31,4 +31,23 @@ You post as `@mihairusu05` (app). Rules are in the root `CLAUDE.md`.
 
 ## Commands
 
-Add run, test and lint commands here once the Expo project is scaffolded.
+Node 22 (Linux, via nvm). Run from `/app`:
+
+| Command | What |
+|---|---|
+| `npm install` | Install deps (`npx expo install <pkg>` to add one, so versions match the SDK) |
+| `npx expo start` | Dev server; scan the QR code with Expo Go. Add `--tunnel` if the phone can't reach WSL |
+| `npm test` | Jest unit tests (`src/**/__tests__`) |
+| `npm run lint` | ESLint (CI runs this) |
+| `npm run typecheck` | `tsc --noEmit`, includes `../contracts/ts` (CI runs this) |
+| `npm run format` | Prettier |
+
+Copy `.env.example` to `.env`. With `EXPO_PUBLIC_AI_URL` empty the app answers from `contracts/fixtures` (no network); with Supabase vars empty the sign-in gate is off.
+
+## Layout
+
+- `src/app/`: Expo Router routes. `(auth)/` sign-in, `(tabs)/` Today, Scan, Library, Recipes, History; `profile` is pushed from Today.
+- `src/api/`: one typed function per AI endpoint (`index.ts`), fetch + token + timeouts + error kinds (`client.ts`), fixture mocks (`mocks.ts`).
+- `src/api/types.ts` + `contract-check.ts`: **temporary** mirror of `contracts/ai/*.schema.json` until `contracts/ts/api.ts` exists; delete both then. `contract-check.ts` fails `tsc` if they drift from `macros.ts`.
+- `src/lib/`: env, Supabase client, auth context, photo resize (1024 px JPEG).
+- `metro.config.js` watches `../contracts` so `@contracts/macros` and the fixtures bundle.
