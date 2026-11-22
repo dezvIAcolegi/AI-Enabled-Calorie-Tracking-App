@@ -9,7 +9,7 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 - [x] Root `CLAUDE.md` and one per folder
 - [ ] DB schema, AI output JSON schemas and `openapi.yaml` agreed and merged
 - [ ] FastAPI stubs returning fixed JSON deployed; DB seed data
-- [x] CI and branch protection on
+- [ ] CI and branch protection on (CI runs on every PR; `main` is **not** protected yet, Kevin to enable a required `ci-ok` check)
 - [ ] Everyone runs the app on their phone against the stubs
 
 ## Decided (24 Oct)
