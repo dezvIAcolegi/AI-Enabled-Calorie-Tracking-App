@@ -8,7 +8,7 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 - [x] Monorepo with `/app`, `/supabase`, `/ai`, `/eval`, `/contracts`, `/docs`
 - [x] Root `CLAUDE.md` and one per folder
 - [x] DB schema, AI output JSON schemas and `openapi.yaml` agreed and merged (`openapi.yaml` + `ts/api.ts` in #23)
-- [ ] FastAPI stubs returning fixed JSON deployed; DB seed data
+- [ ] FastAPI stubs returning fixed JSON deployed; DB seed data (DB seed: done on shared, catalogue + demo account)
 - [ ] CI and branch protection on (CI runs on every PR; `main` is **not** protected yet, Kevin to enable a required `ci-ok` check)
 - [ ] Everyone runs the app on their phone against the stubs
 
@@ -42,7 +42,10 @@ Newest entries first. Format: `YYYY-MM-DD · role · landed / contract change / 
 - 2026-11-22 · app · landed (#22): History (weekly macro chart, 28 days, day view), Recipes (build from library/search, log a portion as scaled ingredients), readable 429 `daily_scan_cap`/`model_quota` and 413/415/502/503 messages.
 - 2026-11-22 · app · landed (#17): ingredient editor (live totals from `macros.ts`, top-3 matches, portions, confidence), meal photo/text, barcode via `barcode-lookup`, label review (flagged fields required), library, Today, profile (targets, scan consent, delete account), email sign-in. Saves through `save_meal` + `meal-photos`.
 - 2026-11-22 · app · landed (#12): Expo SDK 58 app in `/app`, typed `api/` layer (temporary `app/src/api/types.ts` until `contracts/ts/api.ts` merges), navigation, fixture mocks.
-- 2026-11-22 · backend · **blocked:** Supabase `calorie-dev` and `calorie-shared` are paused (free tier, inactivity); nothing below is live on shared until Kevin restores them.
+- 2026-11-22 · backend · **live on shared:** Supabase restored; all 4 migrations applied, `barcode-lookup` + `delete-account` deployed, 104,010-food catalogue copied from dev, demo account seeded. Integration suites pass on dev and shared. Access tokens are ES256. Sign-up is invite-only (`allow-signup.ts invite`); see `supabase/docs/auth.md`.
+- 2026-11-22 · backend · contract change (#36): `withdraw_scan_consent()`; `barcode-lookup` capped at 100 uncached products/user/day (429 `barcode_limit`, table `barcode_usage`).
+- 2026-11-22 · backend · contract change (#38): generated `contracts/ts/database.ts` (`supabase/scripts/gen-db-types.sh`).
+- 2026-11-22 · backend · landed: deploy workflow `deploy-supabase.yml` (#37, skips until repo secrets are set); auth `invite` + `supabase/docs/auth.md` (#40); demo seed fix (#35); sign-up allowlist (#31); CI runs app Jest tests (#33).
 - 2026-11-22 · backend · contract change (#15): private `meal-photos` bucket, `save_meal(meal, items)`, daily scan cap 30/user/day (`scan_usage`, `consume_scan()`, `scan_quota()`), food-visibility RLS on products/recipe_items/meal_items. Demo seed `supabase/seed/demo-user.ts`.
 - 2026-11-22 · backend · landed `barcode-lookup` (#8) and `delete-account` (#9) Edge Functions; app docs in each function's README.md.
 - 2026-10-24 · all · Repo initialised with CLAUDE.md files and shared Claude Code plugin config.
