@@ -1,0 +1,21 @@
+photo,truth_kcal,pred_kcal,truth_grams,pred_grams,found,truth_items,pred_items
+dish_1558110478.png,206,370,161,245,1/3,eggs 34; berries 51; bacon 7; yam 69,scrambled eggs 75; roasted sweet potato 90; bacon 25; raspberries 25; blackberries 30
+dish_1558375667.png,688,549,119,95,1/1,almonds 119,almonds 95
+dish_1558372948.png,688,578,119,100,1/1,almonds 119,almonds 100
+dish_1558113477.png,289,202,50,35,1/1,almonds 50,almonds 35
+dish_1558113941.png,297,229,78,65,1/2,mixed greens 28; almonds 50,almonds 35; spinach salad 30
+dish_1558031394.png,237,300,318,390,2/4,cantaloupe 93; deprecated 41; potatoes 74; yam 110,cantaloupe 120; watermelon 80; roasted sweet potato 100; roasted potato 90
+dish_1557862783.png,443,493,258,300,3/3,cauliflower 77; steak 118; chicken 63,grilled beef steak 130; steamed cauliflower 90; diced chicken breast 80
+dish_1557937157.png,355,393,271,315,5/5,strawberries 36; broccoli 63; raspberries 49; eggs 96; bacon 27,scrambled eggs 110; bacon 30; steamed broccoli 85; raspberries 40; strawberries 50
+dish_1558114284.png,162,190,316,380,2/3,deprecated 143; grapes 83; cantaloupe 90,apple 180; cantaloupe 120; grapes 80
+dish_1557937427.png,26,52,17,35,1/1,eggs 17,scrambled eggs 35
+dish_1557862345.png,104,124,63,75,1/1,chicken 63,diced chicken breast 75
+dish_1558031133.png,136,152,110,140,0/1,yam 110,roasted sweet potato 140
+dish_1557936555.png,149,163,96,110,1/1,eggs 96,scrambled eggs 110
+dish_1558031237.png,32,46,93,130,1/1,cantaloupe 93,cantaloupe melon 130
+dish_1556575327.png,103,113,154,190,3/3,celery 28; olives 62; brussels sprouts 64,kalamata olives 60; roasted brussels sprouts 85; sliced celery 45
+dish_1558030289.png,38,43,107,120,1/1,honeydew melons 107,honeydew melon 120
+dish_1558375732.png,46,41,66,60,1/1,grapes 66,grapes 60
+dish_1557937335.png,47,49,38,45,0/1,yam 38,roasted sweet potato 45
+dish_1558114145.png,57,58,83,75,1/1,grapes 83,red seedless grapes 70; green seedless grapes 5
+dish_1557937037.png,26,26,49,50,1/1,raspberries 49,raspberries 50

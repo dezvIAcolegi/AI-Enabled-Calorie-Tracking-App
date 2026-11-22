@@ -9,7 +9,15 @@ stay out of the repo. The Phase 1 test set needs our own photos with weighed por
 
 ## Decision
 
-**`gemini-3.5-flash`, thinking `minimal`.** `gemini-3.5-flash-lite` as the fallback on 429/503.
+**Updated 25 Oct: `gemini-3.5-flash-lite`, thinking `minimal`.** `gemini-3.5-flash` only while its quota lasts.
+
+The free tier allows `gemini-3.5-flash` only **20 requests per day per project** (quota
+`GenerateRequestsPerDayPerProjectPerModel-FreeTier`, resets at midnight Pacific; more API keys in the
+same project don't add quota). That is 20 meal photos a day for the whole app. Flash-lite ran all 150
+Nutrition5k plates in one go and was close to Flash on the plates both finished: 53 vs 43 kcal error
+(see `README.md`). The team won't pay, so Flash-lite is the main model.
+
+The 24 Oct choice was `gemini-3.5-flash` with Flash-lite as the fallback on 429/503:
 
 | | 3.5-flash | 3.5-flash-lite |
 |---|---|---|
@@ -25,7 +33,7 @@ Other models tried on a text prompt: `gemini-3.8-flash` was correct but took 38â
 ## Findings for Phase 1
 
 - **Free-tier quota is tight.** `3.5-flash` returned 429 after about 10 requests in a few minutes and
-  worked again a minute later; `3.5-flash-lite` kept going. Needs retry with backoff, the lite fallback,
+  worked again a minute later; `3.5-flash-lite` kept going. Its daily cap is 20 (see Decision). Needs retry with backoff, the lite fallback,
   caching, and recorded responses in unit tests.
 - **503 "high demand"** also happened once on `3.5-flash`.
 - **Gemini's `response_schema` rejects bounds** (`exclusiveMinimum` from Pydantic `gt=0`). Send a plain
