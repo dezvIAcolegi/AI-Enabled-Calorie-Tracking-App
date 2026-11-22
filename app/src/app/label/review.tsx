@@ -85,9 +85,9 @@ function Review() {
         raw: draft.result,
         corrected: { per_100g: v.per_100g, serving_grams: v.serving_grams },
       });
-      setLabelDraft(null);
       setActiveFood(food);
       router.replace('/product/log?saved=1');
+      setLabelDraft(null); // after navigating: clearing unmounts this screen
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : 'Could not save the product.');
     } finally {
