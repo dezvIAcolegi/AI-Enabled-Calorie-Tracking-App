@@ -74,3 +74,23 @@ it('sends JSON bodies with a content type', async () => {
   expect(init.headers['Content-Type']).toBe('application/json');
   expect(init.body).toBe('{"text":"eggs"}');
 });
+
+it.each([
+  ['daily_scan_cap', /used all your AI scans/],
+  ['model_quota', /busy right now/],
+  ['something_else', /used all your AI scans/],
+])('explains a 429 with detail %s', async (detail, re) => {
+  fetchMock.mockResolvedValue(json(429, { detail }));
+  await expect(get()).rejects.toMatchObject({
+    kind: 'rate_limited',
+    message: expect.stringMatching(re),
+  });
+});
+
+it('never shows a raw validation payload', async () => {
+  fetchMock.mockResolvedValue(json(422, { detail: [{ loc: ['body'], msg: 'x' }] }));
+  await expect(get()).rejects.toMatchObject({
+    kind: 'bad_request',
+    message: 'The request was rejected.',
+  });
+});
