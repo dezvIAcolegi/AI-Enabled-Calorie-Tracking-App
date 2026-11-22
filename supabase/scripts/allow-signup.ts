@@ -4,6 +4,7 @@
 //
 //   deno run --allow-net --allow-env --env-file=supabase/.env.shared \
 //     supabase/scripts/allow-signup.ts add someone@example.com [note]
+//   ... invite someone@example.com [note]   (allowlist + create a confirmed account)
 //   ... remove someone@example.com
 //   ... list
 
@@ -37,6 +38,28 @@ if (command === "list") {
   });
   if (error) throw error;
   console.log(`Allowed ${email} on ${url}`);
+} else if (command === "invite" && email) {
+  // Allowlists the email and creates the account already confirmed, with a
+  // random password, so no confirmation email is needed (the default Supabase
+  // mailer only reaches org members). Give the password to the person privately.
+  const { error: allowError } = await db.from("signup_allowlist").upsert({
+    email,
+    note: noteParts.join(" ") || "invited",
+  });
+  if (allowError) throw allowError;
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const password = Array.from(
+    crypto.getRandomValues(new Uint8Array(16)),
+    (b) => alphabet[b % alphabet.length],
+  ).join("");
+  const { error } = await db.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
+  if (error) throw error;
+  console.log(`Created ${email} on ${url}`);
+  console.log(`Temporary password (share privately): ${password}`);
 } else if (command === "remove" && email) {
   const { error } = await db.from("signup_allowlist").delete().eq(
     "email",
@@ -48,7 +71,7 @@ if (command === "list") {
   );
 } else {
   console.error(
-    "Usage: allow-signup.ts add <email> [note] | remove <email> | list",
+    "Usage: allow-signup.ts add|invite <email> [note] | remove <email> | list",
   );
   Deno.exit(1);
 }
