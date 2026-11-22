@@ -2,16 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "label-result.schema.json",
   "title": "LabelResult",
-  "description": "Response body of POST /label/read. Values the model couldn't read are null and listed in flagged, so the app can ask the user to fill them in.",
+  "description": "Response body of POST /label/read. Values the model couldn't read are null and listed in flagged, so the app can ask the user to fill them in. A whole column is null when the label doesn't print it.",
   "type": "object",
   "additionalProperties": false,
   "required": ["per_100g", "per_serving", "serving_grams", "flagged"],
   "properties": {
     "per_100g": {
-      "anyOf": [{ "$ref": "ingredient-item.schema.json#/$defs/macros" }, { "type": "null" }]
+      "anyOf": [{ "$ref": "#/$defs/labelMacros" }, { "type": "null" }]
     },
     "per_serving": {
-      "anyOf": [{ "$ref": "ingredient-item.schema.json#/$defs/macros" }, { "type": "null" }]
+      "anyOf": [{ "$ref": "#/$defs/labelMacros" }, { "type": "null" }]
     },
     "serving_grams": {
       "type": ["number", "null"],
@@ -22,6 +22,20 @@
       "uniqueItems": true,
       "description": "Dotted names of fields that were unreadable or failed a check (kcal ≈ 4·protein + 4·carbs + 9·fat; per_serving ≈ per_100g × serving_grams / 100), e.g. \"per_100g.fat\". Empty when everything checks out.",
       "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "labelMacros": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kcal", "protein", "carbs", "fat"],
+      "description": "Like ingredient-item macros, but a value is null when it couldn't be read (and is then listed in flagged). Label-only: the shared macros stay non-null.",
+      "properties": {
+        "kcal": { "type": ["number", "null"], "minimum": 0 },
+        "protein": { "type": ["number", "null"], "minimum": 0, "description": "grams" },
+        "carbs": { "type": ["number", "null"], "minimum": 0, "description": "grams" },
+        "fat": { "type": ["number", "null"], "minimum": 0, "description": "grams" }
+      }
     }
   }
 }

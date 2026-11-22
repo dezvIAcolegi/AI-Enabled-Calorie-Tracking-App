@@ -1,0 +1,522 @@
+openapi: 3.1.0
+info:
+  title: Calorie Tracker AI
+  version: 0.1.0
+paths:
+  /meal/photo:
+    post:
+      tags:
+      - meal
+      summary: Meal Photo
+      operationId: meal_photo_meal_photo_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_meal_photo_meal_photo_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealResponse'
+        '401':
+          description: Missing, invalid or expired Supabase access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Photo larger than 10 MB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: Not a readable image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: 'detail "daily_scan_cap": the user''s daily scans are used
+            up (try tomorrow); detail "model_quota": the shared Gemini quota is exhausted
+            (try later)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: An upstream service (Gemini or Supabase) failed or is unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: The service or its auth keys aren't available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /meal/text:
+    post:
+      tags:
+      - meal
+      summary: Meal Text
+      operationId: meal_text_meal_text_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealTextRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealResponse'
+        '401':
+          description: Missing, invalid or expired Supabase access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Photo larger than 10 MB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: Not a readable image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: 'detail "daily_scan_cap": the user''s daily scans are used
+            up (try tomorrow); detail "model_quota": the shared Gemini quota is exhausted
+            (try later)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: An upstream service (Gemini or Supabase) failed or is unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: The service or its auth keys aren't available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /label/read:
+    post:
+      tags:
+      - label
+      summary: Read Label
+      operationId: read_label_label_read_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_read_label_label_read_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelResult'
+        '401':
+          description: Missing, invalid or expired Supabase access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Photo larger than 10 MB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: Not a readable image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: 'detail "daily_scan_cap": the user''s daily scans are used
+            up (try tomorrow); detail "model_quota": the shared Gemini quota is exhausted
+            (try later)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: An upstream service (Gemini or Supabase) failed or is unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: The service or its auth keys aren't available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /foods/search:
+    get:
+      tags:
+      - nutrition
+      summary: Search Foods
+      operationId: search_foods_foods_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+          title: Q
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Candidate'
+                title: Response Search Foods Foods Search Get
+        '401':
+          description: Missing, invalid or expired Supabase access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: An upstream service (Gemini or Supabase) failed or is unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: The service or its auth keys aren't available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Health Health Get
+components:
+  schemas:
+    Body_meal_photo_meal_photo_post:
+      properties:
+        image:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Image
+          description: Meal photo, JPEG or PNG
+      type: object
+      required:
+      - image
+      title: Body_meal_photo_meal_photo_post
+    Body_read_label_label_read_post:
+      properties:
+        image:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Image
+          description: Nutrition label photo, JPEG or PNG
+      type: object
+      required:
+      - image
+      title: Body_read_label_label_read_post
+    Candidate:
+      properties:
+        food_id:
+          type: string
+          pattern: ^(fdc|off|label|manual):.+$
+          title: Food Id
+        name:
+          type: string
+          minLength: 1
+          title: Name
+        per_100g:
+          $ref: '#/components/schemas/Macros'
+      additionalProperties: false
+      type: object
+      required:
+      - food_id
+      - name
+      - per_100g
+      title: Candidate
+    ErrorResponse:
+      properties:
+        detail:
+          type: string
+          title: Detail
+      type: object
+      required:
+      - detail
+      title: ErrorResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IngredientItem:
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+        food_id:
+          type: string
+          pattern: ^(fdc|off|label|manual):.+$
+          title: Food Id
+        grams:
+          type: number
+          exclusiveMinimum: 0.0
+          title: Grams
+        confidence:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence
+        per_100g:
+          $ref: '#/components/schemas/Macros'
+        candidates:
+          items:
+            $ref: '#/components/schemas/Candidate'
+          type: array
+          maxItems: 3
+          minItems: 1
+          title: Candidates
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - food_id
+      - grams
+      - confidence
+      - per_100g
+      - candidates
+      title: IngredientItem
+    LabelMacros:
+      properties:
+        kcal:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Kcal
+        protein:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Protein
+        carbs:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Carbs
+        fat:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Fat
+      additionalProperties: false
+      type: object
+      required:
+      - kcal
+      - protein
+      - carbs
+      - fat
+      title: LabelMacros
+      description: Like Macros, but a value the model couldn't read is null (and listed
+        in flagged).
+    LabelResult:
+      properties:
+        per_100g:
+          anyOf:
+          - $ref: '#/components/schemas/LabelMacros'
+          - type: 'null'
+        per_serving:
+          anyOf:
+          - $ref: '#/components/schemas/LabelMacros'
+          - type: 'null'
+        serving_grams:
+          anyOf:
+          - type: number
+            exclusiveMinimum: 0.0
+          - type: 'null'
+          title: Serving Grams
+        flagged:
+          items:
+            type: string
+          type: array
+          title: Flagged
+      additionalProperties: false
+      type: object
+      required:
+      - per_100g
+      - per_serving
+      - serving_grams
+      - flagged
+      title: LabelResult
+    Macros:
+      properties:
+        kcal:
+          type: number
+          minimum: 0.0
+          title: Kcal
+        protein:
+          type: number
+          minimum: 0.0
+          title: Protein
+        carbs:
+          type: number
+          minimum: 0.0
+          title: Carbs
+        fat:
+          type: number
+          minimum: 0.0
+          title: Fat
+      additionalProperties: false
+      type: object
+      required:
+      - kcal
+      - protein
+      - carbs
+      - fat
+      title: Macros
+    MealResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/IngredientItem'
+          type: array
+          title: Items
+        warnings:
+          items:
+            type: string
+            enum:
+            - no_food_detected
+            - image_unclear
+            - mixed_dish
+            - text_unclear
+          type: array
+          title: Warnings
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      - warnings
+      title: MealResponse
+    MealTextRequest:
+      properties:
+        text:
+          type: string
+          maxLength: 500
+          minLength: 1
+          title: Text
+          examples:
+          - two eggs and a slice of toast
+      additionalProperties: false
+      type: object
+      required:
+      - text
+      title: MealTextRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
