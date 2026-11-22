@@ -33,14 +33,14 @@ You post as `@mihairusu05` (app). Rules are in the root `CLAUDE.md`.
 
 Node 22 (Linux, via nvm). Run from `/app`:
 
-| Command | What |
-|---|---|
-| `npm install` | Install deps (`npx expo install <pkg>` to add one, so versions match the SDK) |
-| `npx expo start` | Dev server; scan the QR code with Expo Go. Add `--tunnel` if the phone can't reach WSL |
-| `npm test` | Jest unit tests (`src/**/__tests__`) |
-| `npm run lint` | ESLint (CI runs this) |
-| `npm run typecheck` | `tsc --noEmit`, includes `../contracts/ts` (CI runs this) |
-| `npm run format` | Prettier |
+| Command             | What                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `npm install`       | Install deps (`npx expo install <pkg>` to add one, so versions match the SDK)          |
+| `npx expo start`    | Dev server; scan the QR code with Expo Go. Add `--tunnel` if the phone can't reach WSL |
+| `npm test`          | Jest unit tests (`src/**/__tests__`)                                                   |
+| `npm run lint`      | ESLint (CI runs this)                                                                  |
+| `npm run typecheck` | `tsc --noEmit`, includes `../contracts/ts` (CI runs this)                              |
+| `npm run format`    | Prettier                                                                               |
 
 Copy `.env.example` to `.env`. With `EXPO_PUBLIC_AI_URL` empty the app answers from `contracts/fixtures` (no network); with Supabase vars empty the sign-in gate is off.
 
