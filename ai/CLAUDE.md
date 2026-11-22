@@ -30,6 +30,22 @@ Gemini reads the label photo directly (no OCR library) into `per_100g`, `per_ser
 
 FoodData Central search and lookup, used by `meal/` and exposed as `GET /foods/search`. Cache results.
 
+## Board
+
+Rules are in the root `CLAUDE.md`. Sebi and Lucas share this service but not its folders: post a `NEED` rather than editing the other's router.
+
+**Sebi** posts as `@sebeast29` (meal-ai):
+- **Watch for:** changes to `nutrition/` or the food-matching interface (Lucas), skeleton or auth changes, and contract `PROPOSAL`s.
+- **`NEED` to:** Lucas for food matching or search behaviour, and for skeleton or deploy changes.
+- **`DONE` when:** `/meal/photo` or `/meal/text` goes from stub to real, or the meal eval has numbers. Tag `@team`.
+
+**Lucas** posts as `@LucasKing4546` (label-ai):
+- **Watch for:** `NEED`s on the skeleton, auth check, deploy, `nutrition/`, `/foods/search` or `macros.ts`.
+- **`DONE` when:**
+  - `/label/read` or `/foods/search` goes from stub to real.
+  - The service is deployed or its URL changes. Tag `@team`.
+  - The in-process nutrition interface changes. Tag Sebi.
+
 ## May not touch
 
 `/app`, `/supabase`, `/contracts` (except Lucas's `contracts/ts/macros.ts`, still via an all-four PR).

@@ -1,10 +1,9 @@
 # Review owners per folder, matching the ownership table in CLAUDE.md.
-# TODO before merging: replace @MIHAI_GITHUB with Mihai's GitHub username (role 1).
 # Later rules override earlier ones for the same path.
 
 *                           @Kevin-ai-jpg
 
-/app/                       @MIHAI_GITHUB
+/app/                       @mihairusu05
 
 /supabase/                  @Kevin-ai-jpg
 /.github/                   @Kevin-ai-jpg
@@ -19,4 +18,4 @@
 /eval/label/                @LucasKing4546
 
 # Contracts need all four reviewers.
-/contracts/                 @MIHAI_GITHUB @Kevin-ai-jpg @sebeast29 @LucasKing4546
+/contracts/                 @mihairusu05 @Kevin-ai-jpg @sebeast29 @LucasKing4546
