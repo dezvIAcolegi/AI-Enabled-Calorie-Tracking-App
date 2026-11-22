@@ -1,7 +1,7 @@
 // One typed function per AI service endpoint. Screens import from here only.
-import { useAiMocks } from '@/lib/env';
 
 import { aiRequest, TIMEOUT_MS } from './client';
+import { env, useAiMocks } from '@/lib/env';
 import { mocks } from './mocks';
 import type { FoodsSearchResponse, LabelResult, MealResponse } from './types';
 
@@ -68,4 +68,22 @@ export function searchFoods(q: string, signal?: AbortSignal): Promise<FoodsSearc
     timeoutMs: TIMEOUT_MS.search,
     signal,
   });
+}
+
+/** Search box limit from the spec (q: 1–100 chars). */
+export const SEARCH_MAX = 100;
+
+let lastWarm = 0;
+/**
+ * Fire-and-forget GET /health so a sleeping free-tier host is awake by the time the user
+ * has taken a photo. No auth needed; at most once every 5 minutes; errors are ignored.
+ */
+export function warmUp(): void {
+  if (useAiMocks || Date.now() - lastWarm < 5 * 60_000) return;
+  lastWarm = Date.now();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS.health);
+  fetch(`${env.aiUrl}/health`, { signal: ctrl.signal })
+    .catch(() => {})
+    .finally(() => clearTimeout(timer));
 }

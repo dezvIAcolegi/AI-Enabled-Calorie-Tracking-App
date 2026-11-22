@@ -25,8 +25,11 @@ export class ApiError extends Error {
   }
 }
 
-/** Photo calls go through Gemini and can be slow; a free host may also be cold-starting. */
-export const TIMEOUT_MS = { photo: 45_000, text: 30_000, search: 10_000 } as const;
+/**
+ * Photo calls go through Gemini, and the free Render instance sleeps after ~15 min idle
+ * (30–60 s cold start), so photo/text get generous limits. Scan tab warms it with warmUp().
+ */
+export const TIMEOUT_MS = { photo: 90_000, text: 60_000, search: 15_000, health: 60_000 } as const;
 
 type RequestOptions = {
   method: 'GET' | 'POST';
