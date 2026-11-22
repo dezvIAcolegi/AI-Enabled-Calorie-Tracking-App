@@ -20,7 +20,7 @@ Screens: login, today's log (macro totals vs targets), meal scan (photo or text)
 
 ## Board
 
-You post as `@MIHAI_GITHUB` (app). Rules are in the root `CLAUDE.md`.
+You post as `@mihairusu05` (app). Rules are in the root `CLAUDE.md`.
 
 - **Watch for:** endpoints going from stub to live (Sebi, Lucas), changes to tables, RLS or `barcode-lookup` (Kevin), new AI service URLs, and contract `PROPOSAL`s.
 - **`NEED` to:**

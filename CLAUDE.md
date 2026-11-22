@@ -83,7 +83,7 @@ The four sessions coordinate through **one GitHub issue**, the board (its number
 
 | Person | Role | Tag |
 |---|---|---|
-| Mihai | app | `@MIHAI_GITHUB` |
+| Mihai | app | `@mihairusu05` |
 | Kevin | backend | `@Kevin-ai-jpg` |
 | Sebi | meal-ai | `@sebeast29` |
 | Lucas | label-ai | `@LucasKing4546` |
