@@ -6,11 +6,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # Empty defaults so the stubs run without keys.
+    # Empty defaults so the app starts without keys; auth rejects every request until supabase_url is set.
     gemini_api_key: str = ""
     fdc_api_key: str = ""
-    supabase_url: str = ""
-    supabase_jwt_secret: str | None = None
+    supabase_url: str = ""  # https://<ref>.supabase.co, not secret
+
+    @property
+    def supabase_issuer(self) -> str:
+        return self.supabase_url.rstrip("/") + "/auth/v1"
+
+    @property
+    def supabase_jwks_url(self) -> str:
+        return self.supabase_issuer + "/.well-known/jwks.json"
 
 
 @lru_cache
