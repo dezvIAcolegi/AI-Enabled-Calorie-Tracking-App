@@ -63,3 +63,14 @@ def current_user(
 
 
 CurrentUser = Annotated[str, Depends(current_user)]
+
+
+def access_token(
+    _: CurrentUser,
+    creds: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+) -> str:
+    """The caller's verified token, to call Supabase as that user (RLS applies)."""
+    return creds.credentials  # current_user already rejected a missing token
+
+
+AccessToken = Annotated[str, Depends(access_token)]

@@ -141,5 +141,11 @@ def test_returns_user_id(client):
     assert auth.current_user(creds) == "abc-123"
 
 
+def test_access_token_returns_verified_token(client):
+    token = make_token()
+    creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+    assert auth.access_token(auth.current_user(creds), creds) == token
+
+
 def test_health_needs_no_token(client):
     assert client.get("/health").status_code == 200
