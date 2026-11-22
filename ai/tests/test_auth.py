@@ -73,7 +73,7 @@ def client(monkeypatch):
         nutrition_router, "_search", _no_foods
     )  # foods DB is tested in tests/nutrition
     monkeypatch.setattr(
-        label_router, "read_label", _fixture_label
+        label_router.reader, "read_label", _fixture_label
     )  # reader is tested in tests/label
     return TestClient(app)
 
