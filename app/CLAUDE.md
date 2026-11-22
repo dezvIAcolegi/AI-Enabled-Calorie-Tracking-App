@@ -37,7 +37,7 @@ Node 22 (Linux, via nvm). Run from `/app`:
 | ------------------- | -------------------------------------------------------------------------------------- |
 | `npm install`       | Install deps (`npx expo install <pkg>` to add one, so versions match the SDK)          |
 | `npx expo start`    | Dev server; scan the QR code with Expo Go. Add `--tunnel` if the phone can't reach WSL |
-| `npm test`          | Jest unit tests (`src/**/__tests__`)                                                   |
+| `npm test`          | Jest: logic tests plus screen tests with React Native Testing Library (`src/app/__tests__`; v14 needs `await render` / `await fireEvent`) |
 | `npm run lint`      | ESLint (CI runs this)                                                                  |
 | `npm run typecheck` | `tsc --noEmit`, includes `../contracts/ts` (CI runs this)                              |
 | `npm run format`    | Prettier                                                                               |

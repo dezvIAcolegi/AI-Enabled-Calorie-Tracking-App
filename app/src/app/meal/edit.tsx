@@ -72,8 +72,10 @@ function Editor() {
       const kind = SCAN_KIND[draft.source as keyof typeof SCAN_KIND];
       if (kind && draft.raw)
         void recordScan({ kind, raw: draft.raw, corrected: { items: state.items }, mealId });
-      setDraft(null);
+      // Navigate before clearing the draft: clearing unmounts this screen, and an error
+      // thrown after that would vanish with it.
       router.dismissTo('/');
+      setDraft(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save the meal.');
     } finally {
