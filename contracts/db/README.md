@@ -14,6 +14,7 @@ Every `.sql` file here is an identical copy of a migration in `supabase/migratio
 | `scans` | Owner only | Raw AI output + the user's corrected version. Insert only works when `profiles.scan_consent` is true |
 | `profiles` | Owner only | Daily targets, `timezone`, `scan_consent`. Created automatically at sign-up |
 | `signup_allowlist` | Service role only | Emails allowed to create an account |
+| `barcode_usage` | Owner reads; only `barcode-lookup` writes | Open Food Facts lookups per user per day |
 | `scan_usage` | Owner reads; only `consume_scan()` writes | AI scans used per user per day (`day` in the user's timezone) |
 
 Every user table has `user_id`, which defaults to the caller (`auth.uid()`), so inserts from the app can leave it out. Deleting a user deletes all their rows.
@@ -68,6 +69,14 @@ Each user gets **30 AI scans per day** (photo, text or label), counted in their 
 - **App:** `supabase.rpc("scan_quota")` returns the same shape without counting, for "26 scans left today".
 
 Users can read `scan_usage` but never write it. The cap is `daily_scan_limit()`; change it with a new migration.
+
+## Withdrawing consent
+
+`supabase.rpc("withdraw_scan_consent")` turns `scan_consent` off and deletes all of the user's `scans` rows in one transaction; it returns how many were deleted. Meals and photos stay. To give consent, update `profiles` (`scan_consent: true, scan_consent_at: now`).
+
+## Barcode lookups
+
+`barcode-lookup` allows **100 new products per user per day** (cache misses that go to Open Food Facts; barcodes already in `foods` are free). Over the cap it returns **429** `barcode_limit`. Counter: `barcode_usage` (read-only for users); the cap is `daily_barcode_limit()`.
 
 ## Who can sign up
 

@@ -94,7 +94,20 @@ Deno.serve(async (req) => {
   }
   if (cached.data) return json({ food: cached.data, source: "cache" });
 
-  // 2. Ask Open Food Facts, trying each form of the barcode.
+  // 2. A cache miss costs one OFF lookup against the user's daily cap.
+  const quota = await db.rpc("consume_barcode_lookup", { p_user: user.id });
+  if (quota.error) {
+    // Don't block scanning if the counter itself fails; just log it.
+    console.error("consume_barcode_lookup failed", quota.error);
+  } else if (quota.data === false) {
+    return error(
+      429,
+      "barcode_limit",
+      "You've looked up a lot of new products today. Try again tomorrow, or photograph the label.",
+    );
+  }
+
+  // 3. Ask Open Food Facts, trying each form of the barcode.
   let found: { product: OffProduct; code: string } | null = null;
   for (const code of candidates) {
     const result = await fetchOff(code);
@@ -123,7 +136,7 @@ Deno.serve(async (req) => {
     );
   }
 
-  // 3. Cache it as a shared row. ignoreDuplicates covers two users scanning the
+  // 4. Cache it as a shared row. ignoreDuplicates covers two users scanning the
   // same new product at once; we then read back whichever row won.
   const saved = await db
     .from("foods")
