@@ -40,14 +40,17 @@ alter table public.meals
 -- ─── meal_items: totals must follow the macro rule ──────────────────────────
 -- The app computes totals with contracts/ts/macros.ts (per_100g × grams / 100).
 -- This only guards against a wrong or stale snapshot; it doesn't compute
--- anything. The slack covers storing per-100 g values and totals at 2 decimals.
+-- anything. The slack covers storing grams, per-100 g values and totals at
+-- 2 decimals (each term is 2× the worst-case rounding error):
+--   totals ±0.005 → 0.01; per_100g ±0.005 × grams/100 → grams/10000;
+--   grams ±0.005 × per_100g/100 → per_100g/10000.
 
 alter table public.meal_items
   add constraint meal_items_totals_follow_macro_rule check (
-    abs(kcal - kcal_100g * grams / 100) <= 0.01 + grams / 10000
-    and abs(protein - protein_100g * grams / 100) <= 0.01 + grams / 10000
-    and abs(carbs - carbs_100g * grams / 100) <= 0.01 + grams / 10000
-    and abs(fat - fat_100g * grams / 100) <= 0.01 + grams / 10000
+    abs(kcal - kcal_100g * grams / 100) <= 0.01 + grams / 10000 + kcal_100g / 10000
+    and abs(protein - protein_100g * grams / 100) <= 0.01 + grams / 10000 + protein_100g / 10000
+    and abs(carbs - carbs_100g * grams / 100) <= 0.01 + grams / 10000 + carbs_100g / 10000
+    and abs(fat - fat_100g * grams / 100) <= 0.01 + grams / 10000 + fat_100g / 10000
   ) not valid;
 
 -- ─── save_meal: a meal and its items in one transaction ─────────────────────
